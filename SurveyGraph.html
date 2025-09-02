@@ -44,7 +44,7 @@
       { id: "Nachhaltigkeitskoordinatorin – Stein" }
     ];
 
-    const links = [
+    const rawLinks = [
       { source: "CEO – Dr. Müller", target: "CFO – Schneider", label: "braucht Finanzdaten" },
       { source: "CEO – Dr. Müller", target: "COO – Berger", label: "braucht Produktionsberichte" },
       { source: "CEO – Dr. Müller", target: "IT-Leiter – Hartmann", label: "braucht Datenbereitstellung" },
@@ -61,6 +61,14 @@
       { source: "Logistikleiter – Weber", target: "Einkaufsleiterin – Lehmann", label: "braucht Liefertermine" },
       { source: "Nachhaltigkeitsmanagerin – Richter", target: "alle", label: "braucht Verbrauchsdaten" }
     ];
+
+    const links = rawLinks.flatMap(link =>
+      link.target === "alle"
+        ? nodes
+            .filter(n => n.id !== link.source)
+            .map(n => ({ source: link.source, target: n.id, label: link.label }))
+        : [link]
+    );
 
     const svg = d3.select("svg");
     const width = window.innerWidth;
