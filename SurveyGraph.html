@@ -62,17 +62,23 @@
       { source: "Nachhaltigkeitsmanagerin – Richter", target: "alle", label: "braucht Verbrauchsdaten" }
     ];
 
-    const links = rawLinks.flatMap(link =>
-      link.target === "alle"
-        ? nodes
-            .filter(n => n.id !== link.source)
-            .map(n => ({ source: link.source, target: n.id, label: link.label }))
-        : [link]
-    );
+    const links = [];
+    rawLinks.forEach(link => {
+      if (link.target === "alle") {
+        nodes
+          .filter(n => n.id !== link.source)
+          .forEach(n => {
+            links.push({ source: link.source, target: n.id, label: link.label });
+          });
+      } else {
+        links.push(link);
+      }
+    });
 
     const svg = d3.select("svg");
     const width = window.innerWidth;
     const height = window.innerHeight;
+    svg.attr("width", width).attr("height", height);
 
     const simulation = d3.forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id).distance(150))
