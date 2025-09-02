@@ -5,18 +5,29 @@
   <title>Unternehmensanalyse – Graph</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; }
-    svg { width: 100%; height: 100vh; }
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; }
+    #graph-container { width: 100vw; height: 90vh; }
+    svg { width: 100%; height: 100%; display: block; }
     .link { stroke: #999; stroke-opacity: 0.6; }
     .node circle { stroke: #fff; stroke-width: 1.5px; }
     .node text { font-size: 12px; pointer-events: none; }
+    .edge-label {
+      font-size: 11px;
+      fill: #444;
+      text-anchor: middle;
+      pointer-events: none;
+      font-family: Arial, sans-serif;
+    }
   </style>
 </head>
 <body>
   <h2 style="text-align:center;">Organisationsgraph – Abhängigkeiten & Hindernisse</h2>
-  <svg></svg>
+  <div id="graph-container">
+    <svg></svg>
+  </div>
 
   <script>
+    // --- DATA ---
     const nodes = [
       { id: "CEO – Dr. Müller" },
       { id: "CFO – Schneider" },
@@ -62,6 +73,7 @@
       { source: "Nachhaltigkeitsmanagerin – Richter", target: "alle", label: "braucht Verbrauchsdaten" }
     ];
 
+    // --- LINK LOGIC ---
     const links = [];
     rawLinks.forEach(link => {
       if (link.target === "alle") {
@@ -75,17 +87,26 @@
       }
     });
 
+    // --- D3 --- 
     const svg = d3.select("svg");
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    svg.attr("width", width).attr("height", height);
+    const container = document.getElementById('graph-container');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
 
-    const simulation = d3.forceSimulation(nodes)
-      .force("link", d3.forceLink(links).id(d => d.id).distance(150))
-      .force("charge", d3.forceManyBody().strength(-400))
-      .force("center", d3.forceCenter(width / 2, height / 2));
+    svg
+      .attr("width", width)
+      .attr("height", height);
 
-    const link = svg.append("g")
+    // --- Zoom/Drag ---
+    svg.call(d3.zoom().on("zoom", (event) => {
+      g.attr("transform", event.transform);
+    }));
+
+    // --- Main group for pan/zoom ---
+    const g = svg.append("g");
+
+    // --- Links ---
+    const link = g.append("g")
       .attr("stroke", "#999")
       .attr("stroke-opacity", 0.6)
       .selectAll("line")
@@ -93,56 +114,85 @@
       .enter().append("line")
       .attr("stroke-width", 2);
 
-    const node = svg.append("g")
-      .attr("stroke", "#fff")
-      .attr("stroke-width", 1.5)
+    // --- Edge Labels ---
+    const edgeLabel = g.append("g")
+      .selectAll("text")
+      .data(links)
+      .enter().append("text")
+      .attr("class", "edge-label")
+      .text(d => d.label);
+
+    // --- Nodes ---
+    const node = g.append("g")
       .selectAll("g")
       .data(nodes)
-      .enter().append("g");
+      .enter().append("g")
+      .attr("class", "node");
 
-    const circles = node.append("circle")
+    node.append("circle")
       .attr("r", 18)
       .attr("fill", "#69b3a2")
       .call(drag(simulation));
 
-    const labels = node.append("text")
+    node.append("text")
       .text(d => d.id)
       .attr("x", 22)
-      .attr("y", 5);
+      .attr("y", 5)
+      .attr("font-size", "12px")
+      .attr("fill", "#222");
 
-    simulation.on("tick", () => {
+    // --- Simulation ---
+    const simulation = d3.forceSimulation(nodes)
+      .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+      .force("charge", d3.forceManyBody().strength(-400))
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .on("tick", ticked);
+
+    function ticked() {
       link
         .attr("x1", d => d.source.x)
         .attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y);
 
-      node.attr("transform", d => `translate(${d.x},${d.y})`);
-    });
+      node
+        .attr("transform", d => `translate(${d.x},${d.y})`);
 
+      edgeLabel
+        .attr("x", d => (d.source.x + d.target.x) / 2)
+        .attr("y", d => (d.source.y + d.target.y) / 2 - 8);
+    }
+
+    // --- Drag ---
     function drag(simulation) {
       function dragstarted(event, d) {
         if (!event.active) simulation.alphaTarget(0.3).restart();
         d.fx = d.x;
         d.fy = d.y;
       }
-
       function dragged(event, d) {
         d.fx = event.x;
         d.fy = event.y;
       }
-
       function dragended(event, d) {
         if (!event.active) simulation.alphaTarget(0);
         d.fx = null;
         d.fy = null;
       }
-
       return d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended);
     }
+
+    // --- Responsive resize ---
+    window.addEventListener('resize', () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      svg.attr("width", width).attr("height", height);
+      simulation.force("center", d3.forceCenter(width / 2, height / 2));
+      simulation.alpha(1).restart();
+    });
   </script>
 </body>
 </html>
