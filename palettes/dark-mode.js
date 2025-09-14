@@ -1,0 +1,32 @@
+const colors = {
+  primary: "#60a5fa",
+  primaryLight: "#93c5fd",
+  primaryDark: "#3b82f6",
+  secondary: "#a855f7",
+  secondaryLight: "#c084fc",
+  secondaryDark: "#9333ea",
+  accent: "#10b981",
+  success: "#22c55e",
+  warning: "#f59e0b",
+  error: "#ef4444",
+  info: "#06b6d4",
+  background: "#0f172a",
+  surface: "#1e293b",
+  elevatedSurface: "#334155",
+  textPrimary: "#f8fafc",
+  textSecondary: "#cbd5e1",
+  textDisabled: "#64748b",
+  link: "#60a5fa",
+  gray50: "#0f172a",
+  gray100: "#1e293b",
+  gray200: "#334155",
+  gray300: "#475569",
+  gray400: "#64748b",
+  gray500: "#94a3b8",
+  gray600: "#cbd5e1",
+  gray700: "#e2e8f0",
+  gray800: "#f1f5f9",
+  gray900: "#f8fafc"
+};
+
+export default colors;

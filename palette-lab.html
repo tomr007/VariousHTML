@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palette Lab - HTML Seiten Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        'primary-light': '#8b9cff',
+                        'primary-dark': '#4f63d2',
+                        secondary: '#764ba2',
+                        'secondary-light': '#9d6cc8',
+                        'secondary-dark': '#5a3a7d',
+                        accent: '#10b981',
+                        success: '#059669',
+                        warning: '#f59e0b',
+                        error: '#dc2626',
+                        info: '#0ea5e9',
+                        background: '#f8fafc',
+                        surface: '#ffffff',
+                        'elevated-surface': '#ffffff',
+                        'text-primary': '#1e293b',
+                        'text-secondary': '#64748b',
+                        'text-disabled': '#94a3b8',
+                        link: '#667eea'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* CSS Variables will be injected here by the palette manager */
+        :root {
+            --color-primary: #667eea;
+            --color-primary-light: #8b9cff;
+            --color-primary-dark: #4f63d2;
+            --color-secondary: #764ba2;
+            --color-secondary-light: #9d6cc8;
+            --color-secondary-dark: #5a3a7d;
+            --color-accent: #10b981;
+            --color-success: #059669;
+            --color-warning: #f59e0b;
+            --color-error: #dc2626;
+            --color-info: #0ea5e9;
+            --color-bg: #f8fafc;
+            --color-surface: #ffffff;
+            --color-elevated: #ffffff;
+            --color-text: #1e293b;
+            --color-text-2: #64748b;
+            --color-text-disabled: #94a3b8;
+            --color-link: #667eea;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-primary via-primary-light to-secondary font-sans text-text-primary">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-80 bg-white/95 backdrop-blur-xl border-r border-white/20 overflow-y-auto">
+            <!-- Header -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">🎯</span>
+                        <h1 class="text-xl font-bold text-text-primary">Palette Lab</h1>
+                    </div>
+                    <button onclick="window.location.href='index.html'" class="text-text-secondary hover:text-text-primary transition-colors">
+                        ← Zurück
+                    </button>
+                </div>
+
+                <!-- Import Section -->
+                <div class="space-y-3">
+                    <button id="importBtn" class="w-full bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-lg hover:shadow-lg transition-all duration-300">
+                        📁 Paletten importieren
+                    </button>
+                    <div id="dropZone" class="border-2 border-dashed border-primary/30 rounded-lg p-4 text-center text-sm text-text-secondary hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer">
+                        Dateien hierhin ziehen (.json, .js)
+                    </div>
+                    <input type="file" id="paletteFileInput" accept=".json,.js" multiple hidden>
+                </div>
+
+                <!-- Search -->
+                <div class="mt-4">
+                    <input type="text" id="paletteSearch" placeholder="Paletten durchsuchen..."
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+            </div>
+
+            <!-- Palette List -->
+            <div class="p-4">
+                <div id="paletteList" class="space-y-3">
+                    <!-- Palettes will be rendered here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Top Bar -->
+            <div class="bg-white/90 backdrop-blur-xl border-b border-white/20 p-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center space-x-2">
+                            <span class="text-sm font-medium">Demo:</span>
+                            <select id="demoSelect" class="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary">
+                                <option value="dashboard">Dashboard</option>
+                                <option value="forms">Formulare</option>
+                                <option value="table">Tabelle & Liste</option>
+                                <option value="marketing">Marketing/Content</option>
+                            </select>
+                        </label>
+
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="compareMode" class="rounded focus:ring-primary">
+                            <span class="text-sm font-medium">Vergleichsmodus</span>
+                        </label>
+                    </div>
+
+                    <div id="compareControls" class="hidden flex items-center space-x-4">
+                        <select id="paletteA" class="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary">
+                            <option value="">Palette A wählen</option>
+                        </select>
+                        <select id="paletteB" class="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary">
+                            <option value="">Palette B wählen</option>
+                        </select>
+                        <button id="copyLinkBtn" class="px-3 py-1 bg-primary text-white rounded hover:bg-primary-dark transition-colors text-sm">
+                            🔗 Link kopieren
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo Container -->
+            <div class="flex-1 flex">
+                <div class="flex-1 flex">
+                    <div id="singleDemo" class="w-full">
+                        <iframe id="demoFrame" src="demos/dashboard.html" class="w-full h-full border-none"></iframe>
+                    </div>
+                    <div id="compareDemo" class="hidden w-full flex">
+                        <div class="w-1/2 border-r border-gray-300">
+                            <div class="bg-gray-100 px-4 py-2 text-sm font-medium border-b">Palette A</div>
+                            <iframe id="demoFrameA" src="demos/dashboard.html" class="w-full h-[calc(100%-2rem)] border-none"></iframe>
+                        </div>
+                        <div class="w-1/2">
+                            <div class="bg-gray-100 px-4 py-2 text-sm font-medium border-b">Palette B</div>
+                            <iframe id="demoFrameB" src="demos/dashboard.html" class="w-full h-[calc(100%-2rem)] border-none"></iframe>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contrast Panel -->
+                <div class="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+                    <div class="p-4 border-b border-gray-200">
+                        <h3 class="font-semibold text-text-primary flex items-center">
+                            <span class="mr-2">🔍</span>
+                            WCAG Kontrast-Check
+                        </h3>
+                    </div>
+                    <div id="contrastResults" class="p-4 space-y-3">
+                        <!-- Contrast results will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Rename Modal -->
+    <div id="renameModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Palette umbenennen</h3>
+            <input type="text" id="renameInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary mb-4">
+            <div class="flex justify-end space-x-2">
+                <button id="cancelRename" class="px-4 py-2 text-gray-600 hover:text-gray-800">Abbrechen</button>
+                <button id="confirmRename" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark">Umbenennen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4 text-error flex items-center">
+                <span class="mr-2">⚠️</span>
+                Fehler beim Import
+            </h3>
+            <div id="errorContent" class="mb-4 text-sm text-text-secondary"></div>
+            <button id="closeError" class="px-4 py-2 bg-error text-white rounded-lg hover:bg-red-700">Schließen</button>
+        </div>
+    </div>
+
+    <script src="palette-lab.js"></script>
+</body>
+</html>

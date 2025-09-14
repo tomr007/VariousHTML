@@ -13,6 +13,7 @@ class HTMLPageManager {
         const closeModal = document.getElementById('closeModal');
         const deletePageBtn = document.getElementById('deletePageBtn');
         const uiDefBtn = document.getElementById('uiDefBtn');
+        const paletteLabBtn = document.getElementById('paletteLabBtn');
 
         // File input change
         fileInput.addEventListener('change', (e) => this.handleFileUpload(e.target.files));
@@ -45,6 +46,13 @@ class HTMLPageManager {
         if (uiDefBtn) {
             uiDefBtn.addEventListener('click', () => {
                 window.location.href = 'ui-definition.html';
+            });
+        }
+
+        // Palette Lab button
+        if (paletteLabBtn) {
+            paletteLabBtn.addEventListener('click', () => {
+                window.location.href = 'palette-lab.html';
             });
         }
 

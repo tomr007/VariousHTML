@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg, #f8fafc);
+            color: var(--color-text, #1e293b);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--color-surface, #ffffff);
+            border-bottom: 1px solid var(--gray-200, #e5e7eb);
+            padding: 1rem 2rem;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-primary, #667eea);
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--color-text-2, #64748b);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--color-primary, #667eea);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--color-primary, #667eea);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark, #4f63d2);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-secondary-dark, #5a3a7d);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300, #d1d5db);
+            color: var(--color-text, #1e293b);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50, #f9fafb);
+            border-color: var(--gray-400, #9ca3af);
+        }
+
+        .main {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--color-text-2, #64748b);
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--color-surface, #ffffff);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200, #e5e7eb);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-2, #64748b);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-icon.success {
+            background: var(--color-success, #059669);
+            color: white;
+        }
+
+        .stat-icon.warning {
+            background: var(--color-warning, #f59e0b);
+            color: white;
+        }
+
+        .stat-icon.error {
+            background: var(--color-error, #dc2626);
+            color: white;
+        }
+
+        .stat-icon.info {
+            background: var(--color-info, #0ea5e9);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-text, #1e293b);
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+
+        .stat-change.positive {
+            color: var(--color-success, #059669);
+        }
+
+        .stat-change.negative {
+            color: var(--color-error, #dc2626);
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--color-surface, #ffffff);
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--gray-200, #e5e7eb);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem 1.5rem 0;
+            border-bottom: 1px solid var(--gray-200, #e5e7eb);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            color: var(--color-text-2, #64748b);
+            font-size: 0.875rem;
+        }
+
+        .card-body {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200, #e5e7eb);
+        }
+
+        .table th {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--color-text-2, #64748b);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table tbody tr:hover {
+            background: var(--gray-50, #f9fafb);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--color-success, #059669);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning, #f59e0b);
+        }
+
+        .badge-error {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--color-error, #dc2626);
+        }
+
+        .badge-info {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--color-info, #0ea5e9);
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--gray-200, #e5e7eb);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            background: var(--color-accent, #10b981);
+            color: white;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--color-text-2, #64748b);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: var(--gray-200, #e5e7eb);
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-primary, #667eea);
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">Dashboard</div>
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active">Übersicht</a></li>
+                <li><a href="#" class="nav-link">Projekte</a></li>
+                <li><a href="#" class="nav-link">Team</a></li>
+                <li><a href="#" class="nav-link">Berichte</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="btn btn-outline">Einstellungen</button>
+                <button class="btn btn-primary">Neues Projekt</button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">Willkommen zurück, Max!</h1>
+            <p class="page-subtitle">Hier ist eine Übersicht über Ihre aktuellen Projekte und Aktivitäten.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Aktive Projekte</div>
+                    <div class="stat-icon success">📊</div>
+                </div>
+                <div class="stat-value">24</div>
+                <div class="stat-change positive">+12% seit letztem Monat</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Abgeschlossen</div>
+                    <div class="stat-icon info">✅</div>
+                </div>
+                <div class="stat-value">156</div>
+                <div class="stat-change positive">+8% seit letztem Monat</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Überfällig</div>
+                    <div class="stat-icon warning">⚠️</div>
+                </div>
+                <div class="stat-value">3</div>
+                <div class="stat-change negative">+1 seit letzter Woche</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Team-Mitglieder</div>
+                    <div class="stat-icon error">👥</div>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-change positive">+2 neue Mitglieder</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Aktuelle Projekte</h2>
+                    <p class="card-subtitle">Übersicht über laufende Arbeiten</p>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Projekt</th>
+                                <th>Status</th>
+                                <th>Fortschritt</th>
+                                <th>Deadline</th>
+                                <th>Team</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="font-medium">Website Redesign</div>
+                                        <div style="font-size: 0.75rem; color: var(--color-text-2);">UI/UX Verbesserungen</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-success">In Arbeit</span></td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                    <span style="font-size: 0.75rem;">75%</span>
+                                </td>
+                                <td>15.12.2024</td>
+                                <td>5 Personen</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="font-medium">Mobile App</div>
+                                        <div style="font-size: 0.75rem; color: var(--color-text-2);">iOS & Android</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-warning">Überprüfung</span></td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 90%"></div>
+                                    </div>
+                                    <span style="font-size: 0.75rem;">90%</span>
+                                </td>
+                                <td>22.12.2024</td>
+                                <td>3 Personen</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="font-medium">API Integration</div>
+                                        <div style="font-size: 0.75rem; color: var(--color-text-2);">Backend Services</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-error">Blockiert</span></td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 45%"></div>
+                                    </div>
+                                    <span style="font-size: 0.75rem;">45%</span>
+                                </td>
+                                <td>10.12.2024</td>
+                                <td>2 Personen</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div>
+                                        <div class="font-medium">Dokumentation</div>
+                                        <div style="font-size: 0.75rem; color: var(--color-text-2);">User Guides & API Docs</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge badge-info">Geplant</span></td>
+                                <td>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 20%"></div>
+                                    </div>
+                                    <span style="font-size: 0.75rem;">20%</span>
+                                </td>
+                                <td>30.12.2024</td>
+                                <td>1 Person</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Letzte Aktivitäten</h2>
+                    <p class="card-subtitle">Was ist in letzter Zeit passiert</p>
+                </div>
+                <div class="card-body">
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon">🎨</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Design System aktualisiert</div>
+                                <div class="activity-time">vor 2 Stunden</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: var(--color-secondary);">👥</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Neues Teammitglied hinzugefügt</div>
+                                <div class="activity-time">vor 4 Stunden</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: var(--color-warning);">📝</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Projekt-Milestone erreicht</div>
+                                <div class="activity-time">vor 1 Tag</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: var(--color-info);">🚀</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Version 2.0 deployed</div>
+                                <div class="activity-time">vor 2 Tagen</div>
+                            </div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon" style="background: var(--color-error);">🐛</div>
+                            <div class="activity-content">
+                                <div class="activity-title">Critical Bug behoben</div>
+                                <div class="activity-time">vor 3 Tagen</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
