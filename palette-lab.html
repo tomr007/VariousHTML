@@ -133,15 +133,23 @@
                         </label>
                     </div>
 
-                    <div id="compareControls" class="hidden flex items-center space-x-4">
-                        <select id="paletteA" class="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary">
-                            <option value="">Palette A wählen</option>
-                        </select>
-                        <select id="paletteB" class="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary">
-                            <option value="">Palette B wählen</option>
-                        </select>
-                        <button id="copyLinkBtn" class="px-3 py-1 bg-primary text-white rounded hover:bg-primary-dark transition-colors text-sm">
-                            🔗 Link kopieren
+                    <div class="flex items-center space-x-4">
+                        <div id="compareControls" class="hidden flex items-center space-x-4">
+                            <select id="paletteA" class="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary">
+                                <option value="">Palette A wählen</option>
+                            </select>
+                            <select id="paletteB" class="px-3 py-1 border border-gray-300 rounded focus:ring-2 focus:ring-primary">
+                                <option value="">Palette B wählen</option>
+                            </select>
+                            <button id="copyLinkBtn" class="px-3 py-1 bg-primary text-white rounded hover:bg-primary-dark transition-colors text-sm">
+                                🔗 Link kopieren
+                            </button>
+                        </div>
+                        
+                        <!-- WCAG Toggle Button -->
+                        <button id="wcagToggleBtn" class="flex items-center space-x-2 px-3 py-1 bg-white border border-gray-300 rounded hover:bg-gray-50 transition-colors text-sm" title="WCAG Kontrast-Check ein-/ausblenden">
+                            <span class="text-base">🔍</span>
+                            <span class="hidden sm:inline">WCAG</span>
                         </button>
                     </div>
                 </div>
@@ -166,7 +174,7 @@
                 </div>
 
                 <!-- Contrast Panel -->
-                <div class="w-80 bg-white border-l border-gray-200 overflow-y-auto">
+                <div id="contrastPanel" class="w-80 bg-white border-l border-gray-200 overflow-y-auto">
                     <div class="p-4 border-b border-gray-200">
                         <h3 class="font-semibold text-text-primary flex items-center">
                             <span class="mr-2">🔍</span>
