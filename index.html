@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Seiten Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>HTML Seiten Manager</h1>
+            <p>Laden Sie HTML-Seiten hoch und verwalten Sie sie über ein übersichtliches Menü</p>
+        </header>
+
+        <main class="main-content">
+            <!-- Upload Bereich -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <h3>HTML-Dateien hochladen</h3>
+                    <p>Ziehen Sie HTML-Dateien hierher oder klicken Sie zum Auswählen</p>
+                    <input type="file" id="fileInput" accept=".html,.htm" multiple hidden>
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        Dateien auswählen
+                    </button>
+                </div>
+                <div class="upload-status" id="uploadStatus"></div>
+            </section>
+
+            <!-- Seiten Menü -->
+            <section class="pages-section">
+                <h2>Hochgeladene Seiten</h2>
+                <div class="pages-grid" id="pagesGrid">
+                    <div class="no-pages" id="noPages">
+                        <div class="empty-icon">📄</div>
+                        <p>Noch keine Seiten hochgeladen</p>
+                        <p class="empty-subtitle">Laden Sie HTML-Dateien hoch, um sie hier zu sehen</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal für Seitenanzeige -->
+    <div class="modal" id="pageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Seite anzeigen</h3>
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="deletePageBtn">🗑️ Löschen</button>
+                    <button class="btn-close" id="closeModal">✕</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <iframe id="pageFrame" src="" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
