@@ -8,6 +8,7 @@ class PaletteLab {
         this.wcagPanelVisible = localStorage.getItem('paletteLab.wcagVisible') !== 'false'; // Default to visible
         this.currentRenameId = null;
         this.currentEditPalette = null;
+        this.currentColorKey = null;
 
         this.initializeEventListeners();
         this.initializeSidebar();
@@ -168,6 +169,15 @@ class PaletteLab {
             this.hideEditSidebar();
         });
 
+        // Color Picker Modal events
+        document.getElementById('cancelColorPicker').addEventListener('click', () => {
+            this.hideColorPickerModal();
+        });
+
+        document.getElementById('confirmColorPicker').addEventListener('click', () => {
+            this.handleColorPickerConfirm();
+        });
+
         // Keyboard events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -176,6 +186,7 @@ class PaletteLab {
                 this.hideJsonImportModal();
                 this.hideCreatePaletteModal();
                 this.hideEditModal();
+                this.hideColorPickerModal();
             }
         });
     }
@@ -1155,7 +1166,6 @@ class PaletteLab {
         // Update sidebar content
         document.getElementById('editPaletteName').textContent = name;
         this.generateColorTiles(palette);
-        this.generateEditColorInputs(palette);
         
         // Show sidebar
         document.getElementById('paletteEditorOverlay').classList.add('active');
@@ -1203,9 +1213,17 @@ class PaletteLab {
             tile.className = 'flex flex-col space-y-1';
             tile.innerHTML = `
                 <div class="text-xs font-medium text-gray-600">${label}</div>
-                <div class="h-8 rounded-md border border-gray-200 shadow-sm" style="background-color: ${colorValue};" title="${label}: ${colorValue}" data-color-tile="${key}"></div>
+                <div class="h-8 rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" style="background-color: ${colorValue};" title="${label}: ${colorValue} - Klicken zum Bearbeiten" data-color-tile="${key}"></div>
                 <div class="text-xs font-mono text-gray-700 text-center" data-color-code="${key}">${colorValue}</div>
             `;
+            
+            // Add click event listener to the color tile
+            const colorTileDiv = tile.querySelector(`[data-color-tile="${key}"]`);
+            colorTileDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.showColorPickerModal(key, label, colorValue);
+            });
+            
             container.appendChild(tile);
         });
     }
@@ -1228,94 +1246,14 @@ class PaletteLab {
         });
     }
 
-    generateEditColorInputs(palette) {
-        const container = document.getElementById('editColorInputs');
-        const colorKeys = [
-            { key: 'primary', label: 'Primary' },
-            { key: 'primaryLight', label: 'Primary Light' },
-            { key: 'primaryDark', label: 'Primary Dark' },
-            { key: 'secondary', label: 'Secondary' },
-            { key: 'secondaryLight', label: 'Secondary Light' },
-            { key: 'secondaryDark', label: 'Secondary Dark' },
-            { key: 'accent', label: 'Accent' },
-            { key: 'success', label: 'Success' },
-            { key: 'warning', label: 'Warning' },
-            { key: 'error', label: 'Error' },
-            { key: 'info', label: 'Info' },
-            { key: 'background', label: 'Background' },
-            { key: 'surface', label: 'Surface' },
-            { key: 'elevatedSurface', label: 'Elevated Surface' },
-            { key: 'textPrimary', label: 'Text Primary' },
-            { key: 'textSecondary', label: 'Text Secondary' },
-            { key: 'textDisabled', label: 'Text Disabled' },
-            { key: 'link', label: 'Link' },
-            { key: 'gray50', label: 'Gray 50' },
-            { key: 'gray100', label: 'Gray 100' },
-            { key: 'gray200', label: 'Gray 200' },
-            { key: 'gray300', label: 'Gray 300' },
-            { key: 'gray400', label: 'Gray 400' },
-            { key: 'gray500', label: 'Gray 500' },
-            { key: 'gray600', label: 'Gray 600' },
-            { key: 'gray700', label: 'Gray 700' },
-            { key: 'gray800', label: 'Gray 800' },
-            { key: 'gray900', label: 'Gray 900' }
-        ];
-
-        container.innerHTML = '';
-
-        colorKeys.forEach(({ key, label }) => {
-            const currentValue = palette[key] || '#000000';
-            const div = document.createElement('div');
-            div.className = 'bg-white p-3 rounded-lg border border-gray-200';
-            div.innerHTML = `
-                <label class="text-xs font-medium text-gray-600 block mb-2">${label}</label>
-                <div class="flex items-center space-x-2">
-                    <input type="color" id="edit-color-${key}" value="${currentValue}" class="w-10 h-8 rounded border border-gray-300 cursor-pointer">
-                    <input type="text" id="edit-text-${key}" value="${currentValue}" class="flex-1 px-3 py-1 border border-gray-300 rounded text-sm font-mono focus:ring-2 focus:ring-primary focus:border-transparent">
-                </div>
-            `;
-            container.appendChild(div);
-
-            // Sync color picker and text input
-            const colorInput = div.querySelector(`#edit-color-${key}`);
-            const textInput = div.querySelector(`#edit-text-${key}`);
-
-            colorInput.addEventListener('change', () => {
-                textInput.value = colorInput.value;
-                this.previewPaletteChanges();
-            });
-
-            textInput.addEventListener('input', () => {
-                if (this.isValidColor(textInput.value)) {
-                    colorInput.value = textInput.value;
-                    this.previewPaletteChanges();
-                }
-            });
-        });
-    }
+    // Method removed - color editing now happens through direct tile clicks
 
     previewPaletteChanges() {
         if (!this.currentEditPalette) return;
 
-        const updatedPalette = {};
-        const colorKeys = [
-            'primary', 'primaryLight', 'primaryDark',
-            'secondary', 'secondaryLight', 'secondaryDark',
-            'accent', 'success', 'warning', 'error', 'info',
-            'background', 'surface', 'elevatedSurface',
-            'textPrimary', 'textSecondary', 'textDisabled',
-            'link',
-            'gray50', 'gray100', 'gray200', 'gray300',
-            'gray400', 'gray500', 'gray600', 'gray700', 'gray800', 'gray900'
-        ];
-
-        colorKeys.forEach(key => {
-            const textInput = document.getElementById(`edit-text-${key}`);
-            if (textInput) {
-                updatedPalette[key] = textInput.value.trim();
-            }
-        });
-
+        // Get current palette from storage as base
+        const updatedPalette = { ...this.palettes[this.currentEditPalette] };
+        
         // Apply temporary preview to document
         this.applyPaletteToDocument(updatedPalette);
         
@@ -1382,55 +1320,86 @@ class PaletteLab {
             return;
         }
 
-        const updatedPalette = {};
-        const colorKeys = [
-            'primary', 'primaryLight', 'primaryDark',
-            'secondary', 'secondaryLight', 'secondaryDark',
-            'accent', 'success', 'warning', 'error', 'info',
-            'background', 'surface', 'elevatedSurface',
-            'textPrimary', 'textSecondary', 'textDisabled',
-            'link',
-            'gray50', 'gray100', 'gray200', 'gray300',
-            'gray400', 'gray500', 'gray600', 'gray700', 'gray800', 'gray900'
-        ];
+        // The palette has already been updated through direct color tile edits
+        // Just save and update UI
+        this.savePalettes();
+        this.renderPalettes();
+        this.updatePaletteSelectors();
 
-        try {
-            colorKeys.forEach(key => {
-                const textInput = document.getElementById(`edit-text-${key}`);
-                if (!textInput) {
-                    throw new Error(`Input field for ${key} not found`);
-                }
-                
-                const value = textInput.value.trim();
-                if (!this.isValidColor(value)) {
-                    throw new Error(`Ungültige Farbe für ${key}: ${value}`);
-                }
-
-                updatedPalette[key] = value;
-            });
-
-            // Update the palette in storage
-            this.palettes[this.currentEditPalette] = updatedPalette;
-            this.savePalettes();
-            this.renderPalettes();
-            this.updatePaletteSelectors();
-
-            // Re-apply the palette if it's currently active
-            if (this.currentPaletteA === this.currentEditPalette) {
-                this.applyCurrentPalette();
-            }
-            
-            // Update contrast results if needed
-            this.updateContrastResults();
-
-            this.hideEditSidebar();
-
-            // Show success message
-            alert('Palette erfolgreich aktualisiert!');
-            
-        } catch (error) {
-            this.showError('Fehler beim Speichern', error.message);
+        // Re-apply the palette if it's currently active
+        if (this.currentPaletteA === this.currentEditPalette) {
+            this.applyCurrentPalette();
         }
+        
+        // Update contrast results if needed
+        this.updateContrastResults();
+
+        this.hideEditSidebar();
+
+        // Show success message
+        alert('Palette erfolgreich aktualisiert!');
+    }
+
+    showColorPickerModal(colorKey, colorLabel, currentColor) {
+        this.currentColorKey = colorKey;
+        
+        document.getElementById('colorPickerTitle').textContent = `${colorLabel} bearbeiten`;
+        document.getElementById('colorPickerLabel').textContent = `${colorLabel} Farbe:`;
+        document.getElementById('colorPickerInput').value = currentColor;
+        document.getElementById('colorTextInput').value = currentColor;
+        
+        document.getElementById('colorPickerModal').classList.remove('hidden');
+        document.getElementById('colorPickerInput').focus();
+        
+        // Sync color picker and text input
+        const colorInput = document.getElementById('colorPickerInput');
+        const textInput = document.getElementById('colorTextInput');
+        
+        const syncInputs = () => {
+            colorInput.addEventListener('input', () => {
+                textInput.value = colorInput.value;
+            });
+            
+            textInput.addEventListener('input', () => {
+                if (this.isValidColor(textInput.value)) {
+                    colorInput.value = textInput.value;
+                }
+            });
+        };
+        
+        syncInputs();
+    }
+
+    hideColorPickerModal() {
+        document.getElementById('colorPickerModal').classList.add('hidden');
+        this.currentColorKey = null;
+    }
+
+    handleColorPickerConfirm() {
+        if (!this.currentColorKey || !this.currentEditPalette) {
+            this.hideColorPickerModal();
+            return;
+        }
+        
+        const newColor = document.getElementById('colorTextInput').value.trim();
+        
+        if (!this.isValidColor(newColor)) {
+            this.showError('Ungültige Farbe', `Die eingegebene Farbe "${newColor}" ist nicht gültig.`);
+            return;
+        }
+        
+        // Update the palette directly in memory
+        if (this.palettes[this.currentEditPalette]) {
+            this.palettes[this.currentEditPalette][this.currentColorKey] = newColor;
+            
+            // Update the color tile display immediately
+            this.updateColorTiles(this.palettes[this.currentEditPalette]);
+            
+            // Trigger preview update
+            this.previewPaletteChanges();
+        }
+        
+        this.hideColorPickerModal();
     }
 }
 
