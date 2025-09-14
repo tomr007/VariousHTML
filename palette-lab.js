@@ -5,6 +5,7 @@ class PaletteLab {
         this.currentPaletteB = localStorage.getItem('paletteLab.activeB') || '';
         this.currentDemo = localStorage.getItem('paletteLab.demo') || 'dashboard';
         this.compareMode = localStorage.getItem('paletteLab.compareMode') === 'true';
+        this.wcagPanelVisible = localStorage.getItem('paletteLab.wcagVisible') !== 'false'; // Default to visible
         this.currentRenameId = null;
 
         this.initializeEventListeners();
@@ -12,6 +13,7 @@ class PaletteLab {
         this.renderPalettes();
         this.updateDemoSelection();
         this.updateCompareMode();
+        this.updateWcagPanel();
         this.applyCurrentPalette();
         this.updateContrastResults();
     }
@@ -76,6 +78,11 @@ class PaletteLab {
         // Copy link
         document.getElementById('copyLinkBtn').addEventListener('click', () => {
             this.copyComparisonLink();
+        });
+
+        // WCAG Panel Toggle
+        document.getElementById('wcagToggleBtn').addEventListener('click', () => {
+            this.toggleWcagPanel();
         });
 
         // Modal events
@@ -993,6 +1000,29 @@ class PaletteLab {
             case 'AA': return 'border-success bg-success/10';
             case 'AA Large': return 'border-warning bg-warning/10';
             default: return 'border-error bg-error/10';
+        }
+    }
+
+    toggleWcagPanel() {
+        this.wcagPanelVisible = !this.wcagPanelVisible;
+        localStorage.setItem('paletteLab.wcagVisible', this.wcagPanelVisible);
+        this.updateWcagPanel();
+    }
+
+    updateWcagPanel() {
+        const panel = document.getElementById('contrastPanel');
+        const toggleBtn = document.getElementById('wcagToggleBtn');
+        
+        if (this.wcagPanelVisible) {
+            panel.classList.remove('hidden');
+            toggleBtn.classList.add('bg-primary', 'text-white');
+            toggleBtn.classList.remove('bg-white', 'border-gray-300');
+            toggleBtn.title = 'WCAG Kontrast-Check ausblenden';
+        } else {
+            panel.classList.add('hidden');
+            toggleBtn.classList.remove('bg-primary', 'text-white');
+            toggleBtn.classList.add('bg-white', 'border-gray-300');
+            toggleBtn.title = 'WCAG Kontrast-Check einblenden';
         }
     }
 
