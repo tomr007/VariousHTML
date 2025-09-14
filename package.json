@@ -1,0 +1,13 @@
+{
+  "name": "html-page-manager",
+  "version": "1.0.0",
+  "description": "A mini-app for uploading and managing HTML pages",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "dev": "python3 -m http.server 3000"
+  },
+  "keywords": ["html", "file-manager", "upload"],
+  "author": "",
+  "license": "MIT"
+}
