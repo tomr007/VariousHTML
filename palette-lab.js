@@ -1195,19 +1195,40 @@ class PaletteLab {
 
     generateColorTiles(palette) {
         const container = document.getElementById('colorTiles');
-        const primaryColors = [
+        const allColors = [
             { key: 'primary', label: 'Primary' },
             { key: 'primaryLight', label: 'Primary Light' },
             { key: 'primaryDark', label: 'Primary Dark' },
             { key: 'secondary', label: 'Secondary' },
             { key: 'secondaryLight', label: 'Secondary Light' },
             { key: 'secondaryDark', label: 'Secondary Dark' },
-            { key: 'accent', label: 'Accent' }
+            { key: 'accent', label: 'Accent' },
+            { key: 'success', label: 'Success' },
+            { key: 'warning', label: 'Warning' },
+            { key: 'error', label: 'Error' },
+            { key: 'info', label: 'Info' },
+            { key: 'background', label: 'Background' },
+            { key: 'surface', label: 'Surface' },
+            { key: 'elevatedSurface', label: 'Elevated Surface' },
+            { key: 'textPrimary', label: 'Text Primary' },
+            { key: 'textSecondary', label: 'Text Secondary' },
+            { key: 'textDisabled', label: 'Text Disabled' },
+            { key: 'link', label: 'Link' },
+            { key: 'gray50', label: 'Gray 50' },
+            { key: 'gray100', label: 'Gray 100' },
+            { key: 'gray200', label: 'Gray 200' },
+            { key: 'gray300', label: 'Gray 300' },
+            { key: 'gray400', label: 'Gray 400' },
+            { key: 'gray500', label: 'Gray 500' },
+            { key: 'gray600', label: 'Gray 600' },
+            { key: 'gray700', label: 'Gray 700' },
+            { key: 'gray800', label: 'Gray 800' },
+            { key: 'gray900', label: 'Gray 900' }
         ];
 
         container.innerHTML = '';
 
-        primaryColors.forEach(({ key, label }) => {
+        allColors.forEach(({ key, label }) => {
             const colorValue = palette[key] || '#000000';
             const tile = document.createElement('div');
             tile.className = 'flex flex-col space-y-1';
@@ -1229,9 +1250,14 @@ class PaletteLab {
     }
 
     updateColorTiles(palette) {
-        const primaryColors = ['primary', 'primaryLight', 'primaryDark', 'secondary', 'secondaryLight', 'secondaryDark', 'accent'];
+        const allColorKeys = [
+            'primary', 'primaryLight', 'primaryDark', 'secondary', 'secondaryLight', 'secondaryDark', 'accent',
+            'success', 'warning', 'error', 'info', 'background', 'surface', 'elevatedSurface',
+            'textPrimary', 'textSecondary', 'textDisabled', 'link',
+            'gray50', 'gray100', 'gray200', 'gray300', 'gray400', 'gray500', 'gray600', 'gray700', 'gray800', 'gray900'
+        ];
         
-        primaryColors.forEach(key => {
+        allColorKeys.forEach(key => {
             const colorValue = palette[key] || '#000000';
             const tileElement = document.querySelector(`[data-color-tile="${key}"]`);
             const codeElement = document.querySelector(`[data-color-code="${key}"]`);
