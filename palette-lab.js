@@ -32,32 +32,11 @@ class PaletteLab {
     initializeEventListeners() {
         // Import buttons
         document.getElementById('importBtn').addEventListener('click', () => {
-            document.getElementById('paletteFileInput').click();
+            this.showCreatePaletteModal();
         });
 
-        document.getElementById('paletteFileInput').addEventListener('change', (e) => {
-            this.handleFileImport(e.target.files);
-        });
-
-        // Drag and drop
-        const dropZone = document.getElementById('dropZone');
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('border-primary', 'bg-primary/10');
-        });
-
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('border-primary', 'bg-primary/10');
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('border-primary', 'bg-primary/10');
-            this.handleFileImport(e.dataTransfer.files);
-        });
-
-        dropZone.addEventListener('click', () => {
-            document.getElementById('paletteFileInput').click();
+        document.getElementById('importFromTextBtn').addEventListener('click', () => {
+            this.showJsonImportModal();
         });
 
         // Search
@@ -112,73 +91,196 @@ class PaletteLab {
             this.hideErrorModal();
         });
 
+        // JSON Import Modal
+        document.getElementById('cancelJsonImport').addEventListener('click', () => {
+            this.hideJsonImportModal();
+        });
+
+        document.getElementById('confirmJsonImport').addEventListener('click', () => {
+            this.handleJsonImport();
+        });
+
+        // Create Palette Modal
+        document.getElementById('cancelCreatePalette').addEventListener('click', () => {
+            this.hideCreatePaletteModal();
+        });
+
+        document.getElementById('confirmCreatePalette').addEventListener('click', () => {
+            this.handleCreatePalette();
+        });
+
         // Keyboard events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 this.hideRenameModal();
                 this.hideErrorModal();
+                this.hideJsonImportModal();
+                this.hideCreatePaletteModal();
             }
         });
     }
 
-    async handleFileImport(files) {
-        for (const file of files) {
-            try {
-                const content = await this.readFile(file);
-                const palette = this.parsePaletteFile(content, file.name);
+    showJsonImportModal() {
+        document.getElementById('paletteNameInput').value = '';
+        document.getElementById('jsonTextArea').value = '';
+        document.getElementById('jsonImportModal').classList.remove('hidden');
+        document.getElementById('paletteNameInput').focus();
+    }
 
-                if (palette) {
-                    const name = this.generateUniqueName(file.name.replace(/\.[^/.]+$/, ''));
-                    this.palettes[name] = palette;
-                }
-            } catch (error) {
-                this.showError(`Fehler beim Importieren von ${file.name}`, error.message);
-            }
+    hideJsonImportModal() {
+        document.getElementById('jsonImportModal').classList.add('hidden');
+    }
+
+    handleJsonImport() {
+        const name = document.getElementById('paletteNameInput').value.trim();
+        const jsonText = document.getElementById('jsonTextArea').value.trim();
+
+        if (!name) {
+            this.showError('Fehler beim Import', 'Bitte geben Sie einen Namen für die Palette ein.');
+            return;
         }
 
-        this.savePalettes();
-        this.renderPalettes();
-        this.updatePaletteSelectors();
-    }
-
-    readFile(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = () => reject(new Error('Datei konnte nicht gelesen werden'));
-            reader.readAsText(file);
-        });
-    }
-
-    parsePaletteFile(content, filename) {
-        let data;
+        if (!jsonText) {
+            this.showError('Fehler beim Import', 'Bitte fügen Sie JSON-Daten ein.');
+            return;
+        }
 
         try {
-            // Try JSON first
-            if (filename.endsWith('.json')) {
-                data = JSON.parse(content);
-            } else if (filename.endsWith('.js')) {
-                // Safe JS parsing - only allow object return
-                const cleanContent = content.replace(/export\s+default\s+/, '').trim();
-                if (cleanContent.startsWith('{') && cleanContent.endsWith('}')) {
-                    data = JSON.parse(cleanContent);
-                } else {
-                    // Try to extract object from variable declaration
-                    const match = cleanContent.match(/(?:const|let|var)\s+\w+\s*=\s*({[\s\S]*})/);
-                    if (match) {
-                        data = JSON.parse(match[1]);
-                    } else {
-                        throw new Error('Ungültiges JavaScript-Format');
-                    }
-                }
-            } else {
-                throw new Error('Nur .json und .js Dateien werden unterstützt');
-            }
+            const data = JSON.parse(jsonText);
+            const palette = this.validatePalette(data);
+            const uniqueName = this.generateUniqueName(name);
+
+            this.palettes[uniqueName] = palette;
+            this.savePalettes();
+            this.renderPalettes();
+            this.updatePaletteSelectors();
+            this.hideJsonImportModal();
+
+            // Auto-apply the new palette
+            this.applyPalette(uniqueName);
         } catch (error) {
-            throw new Error(`Parsing-Fehler: ${error.message}`);
+            this.showError('Fehler beim Import', error.message);
+        }
+    }
+
+    showCreatePaletteModal() {
+        this.generateColorInputs();
+        document.getElementById('newPaletteNameInput').value = '';
+        document.getElementById('createPaletteModal').classList.remove('hidden');
+        document.getElementById('newPaletteNameInput').focus();
+    }
+
+    hideCreatePaletteModal() {
+        document.getElementById('createPaletteModal').classList.add('hidden');
+    }
+
+    generateColorInputs() {
+        const container = document.getElementById('colorInputs');
+        const colorKeys = [
+            { key: 'primary', label: 'Primary', default: '#667eea' },
+            { key: 'primaryLight', label: 'Primary Light', default: '#8b9cff' },
+            { key: 'primaryDark', label: 'Primary Dark', default: '#4f63d2' },
+            { key: 'secondary', label: 'Secondary', default: '#764ba2' },
+            { key: 'secondaryLight', label: 'Secondary Light', default: '#9d6cc8' },
+            { key: 'secondaryDark', label: 'Secondary Dark', default: '#5a3a7d' },
+            { key: 'accent', label: 'Accent', default: '#10b981' },
+            { key: 'success', label: 'Success', default: '#059669' },
+            { key: 'warning', label: 'Warning', default: '#f59e0b' },
+            { key: 'error', label: 'Error', default: '#dc2626' },
+            { key: 'info', label: 'Info', default: '#0ea5e9' },
+            { key: 'background', label: 'Background', default: '#f8fafc' },
+            { key: 'surface', label: 'Surface', default: '#ffffff' },
+            { key: 'elevatedSurface', label: 'Elevated Surface', default: '#ffffff' },
+            { key: 'textPrimary', label: 'Text Primary', default: '#1e293b' },
+            { key: 'textSecondary', label: 'Text Secondary', default: '#64748b' },
+            { key: 'textDisabled', label: 'Text Disabled', default: '#94a3b8' },
+            { key: 'link', label: 'Link', default: '#667eea' },
+            { key: 'gray50', label: 'Gray 50', default: '#f9fafb' },
+            { key: 'gray100', label: 'Gray 100', default: '#f3f4f6' },
+            { key: 'gray200', label: 'Gray 200', default: '#e5e7eb' },
+            { key: 'gray300', label: 'Gray 300', default: '#d1d5db' },
+            { key: 'gray400', label: 'Gray 400', default: '#9ca3af' },
+            { key: 'gray500', label: 'Gray 500', default: '#6b7280' },
+            { key: 'gray600', label: 'Gray 600', default: '#4b5563' },
+            { key: 'gray700', label: 'Gray 700', default: '#374151' },
+            { key: 'gray800', label: 'Gray 800', default: '#1f2937' },
+            { key: 'gray900', label: 'Gray 900', default: '#111827' }
+        ];
+
+        container.innerHTML = '';
+
+        colorKeys.forEach(({ key, label, default: defaultValue }) => {
+            const div = document.createElement('div');
+            div.className = 'flex flex-col space-y-1';
+            div.innerHTML = `
+                <label class="text-sm font-medium text-gray-700">${label}</label>
+                <div class="flex items-center space-x-2">
+                    <input type="color" id="color-${key}" value="${defaultValue}" class="w-12 h-8 rounded border border-gray-300">
+                    <input type="text" id="text-${key}" value="${defaultValue}" class="flex-1 px-2 py-1 border border-gray-300 rounded text-sm font-mono">
+                </div>
+            `;
+            container.appendChild(div);
+
+            // Sync color picker and text input
+            const colorInput = div.querySelector(`#color-${key}`);
+            const textInput = div.querySelector(`#text-${key}`);
+
+            colorInput.addEventListener('change', () => {
+                textInput.value = colorInput.value;
+            });
+
+            textInput.addEventListener('input', () => {
+                if (this.isValidColor(textInput.value)) {
+                    colorInput.value = textInput.value;
+                }
+            });
+        });
+    }
+
+    handleCreatePalette() {
+        const name = document.getElementById('newPaletteNameInput').value.trim();
+
+        if (!name) {
+            this.showError('Fehler beim Erstellen', 'Bitte geben Sie einen Namen für die Palette ein.');
+            return;
         }
 
-        return this.validatePalette(data);
+        const palette = {};
+        const requiredKeys = [
+            'primary', 'primaryLight', 'primaryDark',
+            'secondary', 'secondaryLight', 'secondaryDark',
+            'accent', 'success', 'warning', 'error', 'info',
+            'background', 'surface', 'elevatedSurface',
+            'textPrimary', 'textSecondary', 'textDisabled',
+            'link',
+            'gray50', 'gray100', 'gray200', 'gray300',
+            'gray400', 'gray500', 'gray600', 'gray700', 'gray800', 'gray900'
+        ];
+
+        try {
+            requiredKeys.forEach(key => {
+                const textInput = document.getElementById(`text-${key}`);
+                const value = textInput.value.trim();
+
+                if (!this.isValidColor(value)) {
+                    throw new Error(`Ungültige Farbe für ${key}: ${value}`);
+                }
+
+                palette[key] = value;
+            });
+
+            const uniqueName = this.generateUniqueName(name);
+            this.palettes[uniqueName] = palette;
+            this.savePalettes();
+            this.renderPalettes();
+            this.updatePaletteSelectors();
+            this.hideCreatePaletteModal();
+
+            // Auto-apply the new palette
+            this.applyPalette(uniqueName);
+        } catch (error) {
+            this.showError('Fehler beim Erstellen', error.message);
+        }
     }
 
     validatePalette(data) {

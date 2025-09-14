@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg, #f8fafc);
+            color: var(--color-text, #1e293b);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--color-surface, #ffffff);
+            border-bottom: 1px solid var(--gray-200, #e5e7eb);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-top {
+            background: var(--gray-900, #111827);
+            color: white;
+            padding: 0.5rem 0;
+        }
+
+        .header-top-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+            font-size: 0.875rem;
+        }
+
+        .header-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary, #667eea);
+        }
+
+        .logo-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: linear-gradient(135deg, var(--color-primary, #667eea), var(--color-secondary, #764ba2));
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .header-nav a {
+            color: var(--color-text, #1e293b);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .header-nav a:hover {
+            color: var(--color-primary, #667eea);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            width: 250px;
+            padding: 0.5rem 2.5rem 0.5rem 1rem;
+            border: 1px solid var(--gray-300, #d1d5db);
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: var(--gray-50, #f9fafb);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-primary, #667eea);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: var(--color-surface, #ffffff);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-2, #64748b);
+            cursor: pointer;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.2s;
+        }
+
+        .user-menu:hover {
+            background: var(--gray-50, #f9fafb);
+        }
+
+        .user-avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background: var(--color-accent, #10b981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--color-primary, #667eea) 0%, var(--color-secondary, #764ba2) 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .hero-stat-label {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--color-text, #1e293b);
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--color-text-2, #64748b);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: var(--color-surface, #ffffff);
+            border-radius: 1rem;
+            padding: 2.5rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-200, #e5e7eb);
+            transition: all 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--color-primary, #667eea), var(--color-secondary, #764ba2));
+            color: white;
+        }
+
+        .service-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--color-text, #1e293b);
+        }
+
+        .service-description {
+            color: var(--color-text-2, #64748b);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--color-primary, #667eea);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark, #4f63d2);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-primary, #667eea);
+            color: var(--color-primary, #667eea);
+        }
+
+        .btn-outline:hover {
+            background: var(--color-primary, #667eea);
+            color: white;
+        }
+
+        /* News Section */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .news-card {
+            background: var(--color-surface, #ffffff);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-200, #e5e7eb);
+            transition: all 0.3s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .news-image {
+            height: 200px;
+            background: var(--gray-100, #f3f4f6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--color-text-2, #64748b);
+        }
+
+        .news-content {
+            padding: 1.5rem;
+        }
+
+        .news-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--color-text-2, #64748b);
+        }
+
+        .news-category {
+            background: var(--color-primary, #667eea);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .news-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--color-text, #1e293b);
+        }
+
+        .news-excerpt {
+            color: var(--color-text-2, #64748b);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .news-link {
+            color: var(--color-primary, #667eea);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .news-link:hover {
+            color: var(--color-primary-dark, #4f63d2);
+        }
+
+        /* Quick Links */
+        .quick-links {
+            background: var(--gray-50, #f9fafb);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+
+        .quick-links-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--color-text, #1e293b);
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-link {
+            background: var(--color-surface, #ffffff);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            text-decoration: none;
+            color: var(--color-text, #1e293b);
+            transition: all 0.2s;
+            border: 1px solid var(--gray-200, #e5e7eb);
+        }
+
+        .quick-link:hover {
+            background: var(--color-primary, #667eea);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .quick-link-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .quick-link-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        /* Contact Banner */
+        .contact-banner {
+            background: linear-gradient(135deg, var(--color-accent, #10b981), var(--color-success, #059669));
+            color: white;
+            padding: 3rem;
+            border-radius: 1rem;
+            text-align: center;
+            margin: 3rem 0;
+        }
+
+        .contact-banner-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .contact-banner-subtitle {
+            font-size: 1.125rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .contact-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--color-accent, #10b981);
+            border: 2px solid white;
+        }
+
+        .btn-white:hover {
+            background: transparent;
+            color: white;
+        }
+
+        .btn-outline-white {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-outline-white:hover {
+            background: white;
+            color: var(--color-accent, #10b981);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--gray-900, #111827);
+            color: white;
+            padding: 3rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links a {
+            color: var(--gray-400, #9ca3af);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-link {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--gray-800, #1f2937);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background: var(--color-primary, #667eea);
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-800, #1f2937);
+            margin-top: 2rem;
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--gray-400, #9ca3af);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* Breadcrumb */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            padding: 1rem 0;
+        }
+
+        .breadcrumb-item {
+            color: var(--color-text-2, #64748b);
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+
+        .breadcrumb-item:hover {
+            color: var(--color-primary, #667eea);
+        }
+
+        .breadcrumb-separator {
+            color: var(--color-text-disabled, #94a3b8);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-main {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .header-nav {
+                order: 3;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-input {
+                width: 200px;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .main {
+                padding: 2rem 1rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        /* Accessibility improvements */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 6px;
+            background: var(--color-primary, #667eea);
+            color: white;
+            padding: 8px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .skip-link:focus {
+            top: 6px;
+        }
+
+        /* Focus styles */
+        a:focus,
+        button:focus,
+        input:focus {
+            outline: 2px solid var(--color-primary, #667eea);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-top-content">
+                <div>📞 +49 (0) 123 456789 | 📧 info@portal-demo.de</div>
+                <div>🕒 Mo-Fr: 8:00-18:00 Uhr</div>
+            </div>
+        </div>
+
+        <div class="header-main">
+            <div class="logo">
+                <div class="logo-icon">🏛️</div>
+                <span>PortalDemo</span>
+            </div>
+
+            <nav class="header-nav">
+                <a href="#home">Startseite</a>
+                <a href="#services">Dienstleistungen</a>
+                <a href="#about">Über uns</a>
+                <a href="#news">Aktuelles</a>
+                <a href="#contact">Kontakt</a>
+            </nav>
+
+            <div class="header-actions">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="Suchen...">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar">MK</div>
+                    <span style="font-size: 0.75rem;">▼</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1 class="hero-title">Willkommen im Bürgerportal</h1>
+            <p class="hero-subtitle">Ihr zentraler Anlaufpunkt für alle kommunalen Dienstleistungen. Einfach, digital und rund um die Uhr verfügbar.</p>
+
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">24/7</span>
+                    <span class="hero-stat-label">Online verfügbar</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">150+</span>
+                    <span class="hero-stat-label">Dienstleistungen</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">50.000+</span>
+                    <span class="hero-stat-label">Zufriedene Bürger</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main" id="main-content">
+        <nav class="breadcrumb">
+            <a href="#" class="breadcrumb-item">Portal</a>
+            <span class="breadcrumb-separator">/</span>
+            <span class="breadcrumb-item">Startseite</span>
+        </nav>
+
+        <!-- Services Section -->
+        <section class="section" id="services">
+            <div class="section-header">
+                <h2 class="section-title">Unsere Dienstleistungen</h2>
+                <p class="section-subtitle">Von Anmeldung bis Zulassung - alle wichtigen Services an einem Ort</p>
+            </div>
+
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">📄</div>
+                    <h3 class="service-title">Dokumente & Bescheinigungen</h3>
+                    <p class="service-description">Beantragen Sie Ausweise, Geburtsurkunden, Führungszeugnisse und weitere offizielle Dokumente online.</p>
+                    <button class="btn btn-primary">Service nutzen</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon" style="background: linear-gradient(135deg, var(--color-accent), var(--color-success));">🏠</div>
+                    <h3 class="service-title">Wohnen & Bauen</h3>
+                    <p class="service-description">Baugenehmigungen, Wohnberechtigungsscheine und Meldebescheinigungen - alles rund ums Wohnen.</p>
+                    <button class="btn btn-primary">Service nutzen</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon" style="background: linear-gradient(135deg, var(--color-info), var(--color-primary));">🚗</div>
+                    <h3 class="service-title">Verkehr & Mobilität</h3>
+                    <p class="service-description">KFZ-Zulassung, Führerschein-Angelegenheiten und Parkausweise online beantragen.</p>
+                    <button class="btn btn-primary">Service nutzen</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon" style="background: linear-gradient(135deg, var(--color-warning), var(--color-error));">💰</div>
+                    <h3 class="service-title">Steuern & Gebühren</h3>
+                    <p class="service-description">Steuererklärungen, Gewerbesteuer und kommunale Abgaben einfach online verwalten.</p>
+                    <button class="btn btn-primary">Service nutzen</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon" style="background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));">🎓</div>
+                    <h3 class="service-title">Bildung & Familie</h3>
+                    <p class="service-description">Schulanmeldungen, Kitaplätze, Elterngeld und weitere familienrelevante Services.</p>
+                    <button class="btn btn-primary">Service nutzen</button>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon" style="background: linear-gradient(135deg, var(--color-accent), var(--color-info));">⚖️</div>
+                    <h3 class="service-title">Recht & Ordnung</h3>
+                    <p class="service-description">Ordnungswidrigkeiten, Gewerbeanmeldungen und rechtliche Angelegenheiten abwickeln.</p>
+                    <button class="btn btn-primary">Service nutzen</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Links -->
+        <section class="quick-links">
+            <h3 class="quick-links-title">Häufig genutzte Services</h3>
+            <div class="quick-links-grid">
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">🆔</span>
+                    <span class="quick-link-title">Personalausweis</span>
+                </a>
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">🏠</span>
+                    <span class="quick-link-title">Ummeldung</span>
+                </a>
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">👶</span>
+                    <span class="quick-link-title">Geburtsurkunde</span>
+                </a>
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">🚗</span>
+                    <span class="quick-link-title">KFZ-Zulassung</span>
+                </a>
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">📋</span>
+                    <span class="quick-link-title">Führungszeugnis</span>
+                </a>
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">🏢</span>
+                    <span class="quick-link-title">Gewerbeanmeldung</span>
+                </a>
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">🎫</span>
+                    <span class="quick-link-title">Parkausweis</span>
+                </a>
+                <a href="#" class="quick-link">
+                    <span class="quick-link-icon">💍</span>
+                    <span class="quick-link-title">Eheschließung</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- News Section -->
+        <section class="section" id="news">
+            <div class="section-header">
+                <h2 class="section-title">Aktuelles & Neuigkeiten</h2>
+                <p class="section-subtitle">Bleiben Sie informiert über wichtige Änderungen und neue Services</p>
+            </div>
+
+            <div class="news-grid">
+                <article class="news-card">
+                    <div class="news-image">📢</div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="news-category">Wichtig</span>
+                            <span>12. September 2024</span>
+                        </div>
+                        <h3 class="news-title">Neue Online-Services verfügbar</h3>
+                        <p class="news-excerpt">Ab sofort können Sie weitere Dokumente wie Sterbeurkunden und internationale Führerscheine online beantragen. Der Service steht 24/7 zur Verfügung.</p>
+                        <a href="#" class="news-link">
+                            Weiterlesen
+                            <span>→</span>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="news-card">
+                    <div class="news-image">🔧</div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="news-category" style="background: var(--color-warning);">Wartung</span>
+                            <span>10. September 2024</span>
+                        </div>
+                        <h3 class="news-title">Geplante Wartungsarbeiten</h3>
+                        <p class="news-excerpt">Am 15. September zwischen 2:00 und 6:00 Uhr finden planmäßige Wartungsarbeiten statt. In dieser Zeit sind einige Services nicht verfügbar.</p>
+                        <a href="#" class="news-link">
+                            Mehr Details
+                            <span>→</span>
+                        </a>
+                    </div>
+                </article>
+
+                <article class="news-card">
+                    <div class="news-image">🎉</div>
+                    <div class="news-content">
+                        <div class="news-meta">
+                            <span class="news-category" style="background: var(--color-success);">Erfolg</span>
+                            <span>8. September 2024</span>
+                        </div>
+                        <h3 class="news-title">Portal erhält Digitalisierungs-Award</h3>
+                        <p class="news-excerpt">Unser Bürgerportal wurde vom Bundesverband für digitale Verwaltung als "Bestes Kommunales Portal 2024" ausgezeichnet.</p>
+                        <a href="#" class="news-link">
+                            Pressemitteilung
+                            <span>→</span>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Contact Banner -->
+        <section class="contact-banner" id="contact">
+            <h2 class="contact-banner-title">Benötigen Sie persönliche Beratung?</h2>
+            <p class="contact-banner-subtitle">Unser Service-Team steht Ihnen gerne zur Verfügung. Kontaktieren Sie uns telefonisch, per E-Mail oder besuchen Sie uns vor Ort.</p>
+            <div class="contact-buttons">
+                <a href="tel:+491234567890" class="btn btn-white">📞 Anrufen</a>
+                <a href="mailto:info@portal-demo.de" class="btn btn-outline-white">📧 E-Mail schreiben</a>
+                <a href="#" class="btn btn-outline-white">📍 Standort finden</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Kontakt</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Rathaus</a></li>
+                    <li><a href="#">Öffnungszeiten</a></li>
+                    <li><a href="#">Anfahrt</a></li>
+                    <li><a href="#">Barrierefreiheit</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Service</h4>
+                <ul class="footer-links">
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Hilfe & Support</a></li>
+                    <li><a href="#">Downloads</a></li>
+                    <li><a href="#">Gebühren</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Stadt & Politik</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Bürgermeister</a></li>
+                    <li><a href="#">Stadtrat</a></li>
+                    <li><a href="#">Ausschreibungen</a></li>
+                    <li><a href="#">Stellenausschreibungen</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-section">
+                <h4>Rechtliches</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Impressum</a></li>
+                    <li><a href="#">Datenschutz</a></li>
+                    <li><a href="#">AGB</a></li>
+                    <li><a href="#">Cookie-Einstellungen</a></li>
+                </ul>
+
+                <div class="footer-social">
+                    <a href="#" class="social-link">f</a>
+                    <a href="#" class="social-link">📷</a>
+                    <a href="#" class="social-link">🐦</a>
+                    <a href="#" class="social-link">▶</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>&copy; 2024 PortalDemo - Alle Rechte vorbehalten</div>
+            <div>
+                <a href="#" style="color: var(--gray-400); margin-right: 1rem;">🌐 English</a>
+                <a href="#" style="color: var(--gray-400); margin-right: 1rem;">🔍 Sitemap</a>
+                <a href="#" style="color: var(--gray-400);">📱 Mobile App</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const query = e.target.value;
+                if (query.trim()) {
+                    alert(`Suche nach: "${query}"`);
+                }
+            }
+        });
+
+        document.querySelector('.search-icon').addEventListener('click', function() {
+            const input = document.querySelector('.search-input');
+            const query = input.value;
+            if (query.trim()) {
+                alert(`Suche nach: "${query}"`);
+            }
+        });
+
+        // Service cards interaction
+        document.querySelectorAll('.service-card .btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const serviceTitle = this.closest('.service-card').querySelector('.service-title').textContent;
+                alert(`Service "${serviceTitle}" wird geöffnet...`);
+            });
+        });
+
+        // Quick links interaction
+        document.querySelectorAll('.quick-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const serviceTitle = this.querySelector('.quick-link-title').textContent;
+                alert(`Quick-Service "${serviceTitle}" wird geöffnet...`);
+            });
+        });
+
+        // News links
+        document.querySelectorAll('.news-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const newsTitle = this.closest('.news-content').querySelector('.news-title').textContent;
+                alert(`Artikel "${newsTitle}" wird geöffnet...`);
+            });
+        });
+
+        // Header navigation active state
+        function setActiveNavItem() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.header-nav a');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - 200) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.style.color = 'var(--color-text)';
+                    if (link.getAttribute('href') === '#' + current) {
+                        link.style.color = 'var(--color-primary)';
+                    }
+                });
+            });
+        }
+
+        setActiveNavItem();
+
+        // User menu interaction
+        document.querySelector('.user-menu').addEventListener('click', function() {
+            alert('Benutzermenu wird geöffnet...\n\n• Profil bearbeiten\n• Meine Anträge\n• Benachrichtigungen\n• Abmelden');
+        });
+
+        // Contact buttons
+        document.querySelectorAll('.contact-buttons .btn').forEach(button => {
+            if (button.textContent.includes('Anrufen') || button.textContent.includes('E-Mail')) {
+                // Let default behavior work for tel: and mailto: links
+                return;
+            }
+
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (button.textContent.includes('Standort')) {
+                    alert('Standort wird in Karten-App geöffnet...\n\nRathaus\nMusterstraße 123\n12345 Musterstadt');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
