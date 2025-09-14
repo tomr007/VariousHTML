@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Definition - HTML Seiten Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        'primary-light': '#8b9cff',
+                        'primary-dark': '#4f63d2',
+                        secondary: '#764ba2',
+                        'secondary-light': '#9d6cc8',
+                        'secondary-dark': '#5a3a7d',
+                        accent: '#10b981',
+                        success: '#059669',
+                        warning: '#f59e0b',
+                        error: '#dc2626',
+                        info: '#0ea5e9',
+                        background: '#f8fafc',
+                        surface: '#ffffff',
+                        'elevated-surface': '#ffffff',
+                        'text-primary': '#1e293b',
+                        'text-secondary': '#64748b',
+                        'text-disabled': '#94a3b8',
+                        link: '#667eea'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-primary via-primary-light to-secondary font-sans text-text-primary">
+    <div class="max-w-6xl mx-auto px-5 py-8">
+        <!-- Navigation Header -->
+        <nav class="flex justify-between items-center mb-8 bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-4 border border-white/20">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold">🎨</span>
+                </div>
+                <span class="text-white font-semibold text-lg">UI Definition</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button onclick="window.location.href='index.html'" class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg border border-white/30 transition-all duration-300 hover:-translate-y-0.5 flex items-center space-x-2">
+                    <span>←</span>
+                    <span>Zurück</span>
+                </button>
+            </div>
+        </nav>
+
+        <header class="text-center mb-12 text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">UI Design System</h1>
+            <p class="text-lg md:text-xl opacity-90 max-w-2xl mx-auto">Aktuelle Farben, Typographie und Komponenten</p>
+        </header>
+
+        <main class="space-y-8">
+            <!-- Farbpalette -->
+            <section class="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <h2 class="text-text-primary text-3xl font-bold mb-8">Farbpalette</h2>
+
+                <!-- Primärfarben -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-text-primary">Primärfarben</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-primary p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Primary</div>
+                            <div class="text-white/80 text-sm">#667eea</div>
+                        </div>
+                        <div class="bg-primary-light p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Primary Light</div>
+                            <div class="text-white/80 text-sm">#8b9cff</div>
+                        </div>
+                        <div class="bg-primary-dark p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Primary Dark</div>
+                            <div class="text-white/80 text-sm">#4f63d2</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sekundärfarben -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-text-primary">Sekundärfarben</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-secondary p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Secondary</div>
+                            <div class="text-white/80 text-sm">#764ba2</div>
+                        </div>
+                        <div class="bg-secondary-light p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Secondary Light</div>
+                            <div class="text-white/80 text-sm">#9d6cc8</div>
+                        </div>
+                        <div class="bg-secondary-dark p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Secondary Dark</div>
+                            <div class="text-white/80 text-sm">#5a3a7d</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Funktionale Farben -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-text-primary">Funktionale Farben</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-accent p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Accent</div>
+                            <div class="text-white/80 text-sm">#10b981</div>
+                        </div>
+                        <div class="bg-success p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Success</div>
+                            <div class="text-white/80 text-sm">#059669</div>
+                        </div>
+                        <div class="bg-warning p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Warning</div>
+                            <div class="text-white/80 text-sm">#f59e0b</div>
+                        </div>
+                        <div class="bg-error p-6 rounded-xl shadow-md">
+                            <div class="text-white font-semibold mb-2">Error</div>
+                            <div class="text-white/80 text-sm">#dc2626</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Farben -->
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-text-primary">Textfarben</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div class="bg-surface p-6 rounded-xl shadow-md border">
+                            <div class="text-text-primary font-semibold mb-2">Text Primary</div>
+                            <div class="text-text-secondary text-sm">#1e293b</div>
+                        </div>
+                        <div class="bg-surface p-6 rounded-xl shadow-md border">
+                            <div class="text-text-secondary font-semibold mb-2">Text Secondary</div>
+                            <div class="text-text-secondary text-sm">#64748b</div>
+                        </div>
+                        <div class="bg-surface p-6 rounded-xl shadow-md border">
+                            <div class="text-text-disabled font-semibold mb-2">Text Disabled</div>
+                            <div class="text-text-secondary text-sm">#94a3b8</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Typographie -->
+            <section class="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <h2 class="text-text-primary text-3xl font-bold mb-8">Typographie</h2>
+
+                <div class="space-y-6">
+                    <div class="border-b border-gray-200 pb-6">
+                        <h1 class="text-5xl font-bold text-text-primary mb-2">Hauptüberschrift H1</h1>
+                        <p class="text-text-secondary">text-5xl font-bold</p>
+                    </div>
+
+                    <div class="border-b border-gray-200 pb-6">
+                        <h2 class="text-3xl font-bold text-text-primary mb-2">Sektion Überschrift H2</h2>
+                        <p class="text-text-secondary">text-3xl font-bold</p>
+                    </div>
+
+                    <div class="border-b border-gray-200 pb-6">
+                        <h3 class="text-xl font-semibold text-text-primary mb-2">Unterüberschrift H3</h3>
+                        <p class="text-text-secondary">text-xl font-semibold</p>
+                    </div>
+
+                    <div class="border-b border-gray-200 pb-6">
+                        <p class="text-lg text-text-primary mb-2">Normaler Text (Large)</p>
+                        <p class="text-text-secondary">text-lg</p>
+                    </div>
+
+                    <div>
+                        <p class="text-base text-text-primary mb-2">Normaler Text (Base)</p>
+                        <p class="text-text-secondary">text-base</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Komponenten -->
+            <section class="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <h2 class="text-text-primary text-3xl font-bold mb-8">UI Komponenten</h2>
+
+                <!-- Buttons -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-text-primary">Buttons</h3>
+                    <div class="flex flex-wrap gap-4">
+                        <button class="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full text-lg font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-primary/30">
+                            Primary Button
+                        </button>
+                        <button class="bg-white/20 hover:bg-white/30 text-primary px-6 py-2 rounded-lg border border-primary/30 transition-all duration-300">
+                            Secondary Button
+                        </button>
+                        <button class="bg-accent text-white px-6 py-2 rounded-lg hover:bg-success transition-colors duration-300">
+                            Accent Button
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cards -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-semibold mb-4 text-text-primary">Cards</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-surface rounded-xl p-6 shadow-md border border-gray-100">
+                            <h4 class="text-text-primary font-semibold mb-2">Standard Card</h4>
+                            <p class="text-text-secondary">Eine einfache Karte mit Schatten und abgerundeten Ecken.</p>
+                        </div>
+                        <div class="bg-surface rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+                            <h4 class="text-text-primary font-semibold mb-2">Hover Card</h4>
+                            <p class="text-text-secondary">Eine Karte mit Hover-Effekt für interaktive Elemente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Glassmorphism -->
+                <div>
+                    <h3 class="text-xl font-semibold mb-4 text-text-primary">Glassmorphism Effekt</h3>
+                    <div class="bg-white/20 backdrop-blur-lg rounded-2xl p-6 border border-white/30">
+                        <h4 class="text-white font-semibold mb-2">Glassmorphism Container</h4>
+                        <p class="text-white/80">Transparenter Hintergrund mit Blur-Effekt für moderne UI-Elemente.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Spacing & Layout -->
+            <section class="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <h2 class="text-text-primary text-3xl font-bold mb-8">Abstände & Layout</h2>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-text-primary">Standard Abstände</h3>
+                        <div class="space-y-2">
+                            <div class="bg-primary/10 p-2 rounded">Padding: 0.5rem (2)</div>
+                            <div class="bg-primary/10 p-4 rounded">Padding: 1rem (4)</div>
+                            <div class="bg-primary/10 p-6 rounded">Padding: 1.5rem (6)</div>
+                            <div class="bg-primary/10 p-8 rounded">Padding: 2rem (8)</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold mb-4 text-text-primary">Border Radius</h3>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-primary/10 p-4 rounded">rounded (0.25rem)</div>
+                            <div class="bg-primary/10 p-4 rounded-lg">rounded-lg (0.5rem)</div>
+                            <div class="bg-primary/10 p-4 rounded-xl">rounded-xl (0.75rem)</div>
+                            <div class="bg-primary/10 p-4 rounded-2xl">rounded-2xl (1rem)</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

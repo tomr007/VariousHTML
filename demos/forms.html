@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulare Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--color-bg, #f8fafc);
+            color: var(--color-text, #1e293b);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--color-primary, #667eea);
+        }
+
+        .page-subtitle {
+            color: var(--color-text-2, #64748b);
+            font-size: 1.1rem;
+        }
+
+        .form-container {
+            background: var(--color-surface, #ffffff);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--gray-200, #e5e7eb);
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--color-text, #1e293b);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--color-primary, #667eea);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-row.single {
+            flex-direction: column;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--color-text, #1e293b);
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: var(--color-error, #dc2626);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300, #d1d5db);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background: var(--color-surface, #ffffff);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary, #667eea);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-input:invalid:not(:focus):not(:placeholder-shown) {
+            border-color: var(--color-error, #dc2626);
+            background-color: rgba(220, 38, 38, 0.05);
+        }
+
+        .form-input:valid:not(:focus):not(:placeholder-shown) {
+            border-color: var(--color-success, #059669);
+            background-color: rgba(5, 150, 105, 0.05);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300, #d1d5db);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            background: var(--color-surface, #ffffff);
+            cursor: pointer;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--color-primary, #667eea);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group, .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .checkbox-item, .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .checkbox-input, .radio-input {
+            width: 1.125rem;
+            height: 1.125rem;
+            accent-color: var(--color-primary, #667eea);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .toggle {
+            position: relative;
+            width: 3rem;
+            height: 1.5rem;
+            background: var(--gray-300, #d1d5db);
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--color-primary, #667eea);
+        }
+
+        .toggle-handle {
+            position: absolute;
+            top: 0.125rem;
+            left: 0.125rem;
+            width: 1.25rem;
+            height: 1.25rem;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .toggle.active .toggle-handle {
+            transform: translateX(1.5rem);
+        }
+
+        .form-help {
+            font-size: 0.875rem;
+            color: var(--color-text-2, #64748b);
+            margin-top: 0.25rem;
+        }
+
+        .form-error {
+            font-size: 0.875rem;
+            color: var(--color-error, #dc2626);
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .form-success {
+            font-size: 0.875rem;
+            color: var(--color-success, #059669);
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--color-primary, #667eea);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark, #4f63d2);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--color-secondary, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-secondary-dark, #5a3a7d);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--gray-300, #d1d5db);
+            color: var(--color-text, #1e293b);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50, #f9fafb);
+            border-color: var(--gray-400, #9ca3af);
+        }
+
+        .btn-danger {
+            background: var(--color-error, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200, #e5e7eb);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: rgba(5, 150, 105, 0.1);
+            border: 1px solid rgba(5, 150, 105, 0.2);
+            color: var(--color-success, #059669);
+        }
+
+        .alert-error {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            color: var(--color-error, #dc2626);
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            color: var(--color-warning, #f59e0b);
+        }
+
+        .alert-info {
+            background: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            color: var(--color-info, #0ea5e9);
+        }
+
+        .file-upload {
+            border: 2px dashed var(--gray-300, #d1d5db);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            text-align: center;
+            background: var(--gray-50, #f9fafb);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: var(--color-primary, #667eea);
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .file-upload.dragover {
+            border-color: var(--color-primary, #667eea);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .file-upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400, #9ca3af);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 0.5rem;
+            background: var(--gray-200, #e5e7eb);
+            border-radius: 0.25rem;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-primary, #667eea);
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            body {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Formulare Demo</h1>
+            <p class="page-subtitle">Verschiedene Eingabeelemente und Validierungszustände</p>
+        </div>
+
+        <div class="alert alert-info">
+            <span>ℹ️</span>
+            <span>Dieses Formular zeigt verschiedene Eingabeelemente und deren Verhalten mit unterschiedlichen Farbpaletten.</span>
+        </div>
+
+        <div class="form-container">
+            <form id="demoForm">
+                <div class="form-section">
+                    <h2 class="section-title">Persönliche Informationen</h2>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required" for="firstName">Vorname</label>
+                            <input type="text" id="firstName" name="firstName" class="form-input" placeholder="Ihr Vorname" required>
+                            <div class="form-help">Geben Sie Ihren Vornamen ein</div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required" for="lastName">Nachname</label>
+                            <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Ihr Nachname" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required" for="email">E-Mail</label>
+                            <input type="email" id="email" name="email" class="form-input" placeholder="ihre@email.com" required>
+                            <div class="form-error" style="display: none;">
+                                <span>⚠️</span>
+                                <span>Bitte geben Sie eine gültige E-Mail-Adresse ein</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="phone">Telefon</label>
+                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="+49 123 456789">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Adresse</h2>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label required" for="street">Straße und Hausnummer</label>
+                            <input type="text" id="street" name="street" class="form-input" placeholder="Musterstraße 123" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex: 0 0 100px;">
+                            <label class="form-label required" for="zipCode">PLZ</label>
+                            <input type="text" id="zipCode" name="zipCode" class="form-input" placeholder="12345" pattern="[0-9]{5}" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required" for="city">Stadt</label>
+                            <input type="text" id="city" name="city" class="form-input" placeholder="Musterstadt" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required" for="country">Land</label>
+                            <select id="country" name="country" class="form-select" required>
+                                <option value="">Wählen Sie ein Land</option>
+                                <option value="DE" selected>Deutschland</option>
+                                <option value="AT">Österreich</option>
+                                <option value="CH">Schweiz</option>
+                                <option value="US">USA</option>
+                                <option value="GB">Großbritannien</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Präferenzen</h2>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Interessensbereiche</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="interests" value="tech">
+                                    <span>Technologie</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="interests" value="design" checked>
+                                    <span>Design</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="interests" value="marketing">
+                                    <span>Marketing</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" class="checkbox-input" name="interests" value="business">
+                                    <span>Business</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Kontaktmethode</label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" class="radio-input" name="contact" value="email" checked>
+                                    <span>E-Mail</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" class="radio-input" name="contact" value="phone">
+                                    <span>Telefon</span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" class="radio-input" name="contact" value="none">
+                                    <span>Kein Kontakt</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="toggle-container">
+                                <label class="form-label">Newsletter abonnieren</label>
+                                <div class="toggle active" onclick="toggleSwitch(this)">
+                                    <div class="toggle-handle"></div>
+                                </div>
+                                <input type="hidden" name="newsletter" value="true">
+                            </div>
+                            <div class="form-help">Erhalten Sie regelmäßige Updates per E-Mail</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h2 class="section-title">Nachricht</h2>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label" for="subject">Betreff</label>
+                            <input type="text" id="subject" name="subject" class="form-input" placeholder="Worum geht es?">
+                        </div>
+                    </div>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label" for="message">Nachricht</label>
+                            <textarea id="message" name="message" class="form-input form-textarea" placeholder="Ihre Nachricht..."></textarea>
+                            <div class="form-help">Maximal 500 Zeichen</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row single">
+                        <div class="form-group">
+                            <label class="form-label">Dateien anhängen</label>
+                            <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+                                <div class="file-upload-icon">📎</div>
+                                <div>Klicken oder Dateien hierhin ziehen</div>
+                                <div class="form-help">PNG, JPG, PDF bis 10MB</div>
+                            </div>
+                            <input type="file" id="fileInput" style="display: none;" multiple accept=".png,.jpg,.jpeg,.pdf">
+                            <div class="progress-bar" style="display: none;">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline">Abbrechen</button>
+                    <button type="button" class="btn btn-danger">Zurücksetzen</button>
+                    <button type="submit" class="btn btn-primary">Absenden</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="form-container">
+            <h2 class="section-title">Validierungsbeispiele</h2>
+
+            <div class="alert alert-success">
+                <span>✅</span>
+                <span>Erfolg: Ihre Daten wurden erfolgreich gespeichert.</span>
+            </div>
+
+            <div class="alert alert-error">
+                <span>❌</span>
+                <span>Fehler: Bitte überprüfen Sie Ihre Eingaben.</span>
+            </div>
+
+            <div class="alert alert-warning">
+                <span>⚠️</span>
+                <span>Warnung: Einige Felder sind noch nicht vollständig ausgefüllt.</span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="validExample">Gültige Eingabe</label>
+                    <input type="email" id="validExample" class="form-input" value="max@example.com">
+                    <div class="form-success">
+                        <span>✅</span>
+                        <span>Gültige E-Mail-Adresse</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="invalidExample">Ungültige Eingabe</label>
+                    <input type="email" id="invalidExample" class="form-input" value="invalid-email" style="border-color: var(--color-error); background-color: rgba(220, 38, 38, 0.05);">
+                    <div class="form-error">
+                        <span>⚠️</span>
+                        <span>Ungültige E-Mail-Adresse</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            const input = element.parentElement.querySelector('input[type="hidden"]');
+            input.value = element.classList.contains('active') ? 'true' : 'false';
+        }
+
+        // File upload handling
+        const fileUpload = document.querySelector('.file-upload');
+        const fileInput = document.getElementById('fileInput');
+        const progressBar = document.querySelector('.progress-bar');
+        const progressFill = document.querySelector('.progress-fill');
+
+        fileUpload.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUpload.classList.add('dragover');
+        });
+
+        fileUpload.addEventListener('dragleave', () => {
+            fileUpload.classList.remove('dragover');
+        });
+
+        fileUpload.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUpload.classList.remove('dragover');
+            // Handle dropped files here
+            simulateUpload();
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                simulateUpload();
+            }
+        });
+
+        function simulateUpload() {
+            progressBar.style.display = 'block';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressFill.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                        progressFill.style.width = '0%';
+                    }, 1000);
+                }
+            }, 100);
+        }
+
+        // Form validation example
+        document.getElementById('demoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Demo-Formular würde hier abgesendet werden!');
+        });
+    </script>
+</body>
+</html>
