@@ -1154,6 +1154,7 @@ class PaletteLab {
 
         // Update sidebar content
         document.getElementById('editPaletteName').textContent = name;
+        this.generateColorTiles(palette);
         this.generateEditColorInputs(palette);
         
         // Show sidebar
@@ -1180,6 +1181,51 @@ class PaletteLab {
         }
         
         this.currentEditPalette = null;
+    }
+
+    generateColorTiles(palette) {
+        const container = document.getElementById('colorTiles');
+        const primaryColors = [
+            { key: 'primary', label: 'Primary' },
+            { key: 'primaryLight', label: 'Primary Light' },
+            { key: 'primaryDark', label: 'Primary Dark' },
+            { key: 'secondary', label: 'Secondary' },
+            { key: 'secondaryLight', label: 'Secondary Light' },
+            { key: 'secondaryDark', label: 'Secondary Dark' },
+            { key: 'accent', label: 'Accent' }
+        ];
+
+        container.innerHTML = '';
+
+        primaryColors.forEach(({ key, label }) => {
+            const colorValue = palette[key] || '#000000';
+            const tile = document.createElement('div');
+            tile.className = 'flex flex-col space-y-1';
+            tile.innerHTML = `
+                <div class="text-xs font-medium text-gray-600">${label}</div>
+                <div class="h-8 rounded-md border border-gray-200 shadow-sm" style="background-color: ${colorValue};" title="${label}: ${colorValue}" data-color-tile="${key}"></div>
+                <div class="text-xs font-mono text-gray-700 text-center" data-color-code="${key}">${colorValue}</div>
+            `;
+            container.appendChild(tile);
+        });
+    }
+
+    updateColorTiles(palette) {
+        const primaryColors = ['primary', 'primaryLight', 'primaryDark', 'secondary', 'secondaryLight', 'secondaryDark', 'accent'];
+        
+        primaryColors.forEach(key => {
+            const colorValue = palette[key] || '#000000';
+            const tileElement = document.querySelector(`[data-color-tile="${key}"]`);
+            const codeElement = document.querySelector(`[data-color-code="${key}"]`);
+            
+            if (tileElement) {
+                tileElement.style.backgroundColor = colorValue;
+                tileElement.title = `${key}: ${colorValue}`;
+            }
+            if (codeElement) {
+                codeElement.textContent = colorValue;
+            }
+        });
     }
 
     generateEditColorInputs(palette) {
@@ -1272,6 +1318,9 @@ class PaletteLab {
 
         // Apply temporary preview to document
         this.applyPaletteToDocument(updatedPalette);
+        
+        // Update color tiles to show current values
+        this.updateColorTiles(updatedPalette);
         
         // Also apply to the current active frame if this is the active palette
         if (!this.compareMode && this.currentPaletteA === this.currentEditPalette) {
