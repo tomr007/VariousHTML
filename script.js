@@ -12,6 +12,7 @@ class HTMLPageManager {
         const modal = document.getElementById('pageModal');
         const closeModal = document.getElementById('closeModal');
         const deletePageBtn = document.getElementById('deletePageBtn');
+        const uiDefBtn = document.getElementById('uiDefBtn');
 
         // File input change
         fileInput.addEventListener('change', (e) => this.handleFileUpload(e.target.files));
@@ -39,6 +40,13 @@ class HTMLPageManager {
         });
 
         deletePageBtn.addEventListener('click', () => this.deletePage());
+
+        // UI Definition button
+        if (uiDefBtn) {
+            uiDefBtn.addEventListener('click', () => {
+                window.location.href = 'ui-definition.html';
+            });
+        }
 
         // Keyboard events
         document.addEventListener('keydown', (e) => {
