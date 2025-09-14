@@ -594,6 +594,8 @@ class PaletteLab {
 
         if (!this.compareMode) {
             this.applyPaletteToDocument(this.palettes[name]);
+            // Apply palette to single demo frame when not in comparison mode
+            this.applyPaletteToSingleFrame(name);
         }
 
         this.applyPaletteToFrame('A');
@@ -743,6 +745,9 @@ class PaletteLab {
 
         this.updateDemoFrames();
         this.setupScrollSync();
+        
+        // Reapply current palette when switching modes
+        this.applyCurrentPalette();
     }
 
     updateDemoFrames() {
@@ -824,6 +829,11 @@ class PaletteLab {
     applyCurrentPalette() {
         if (this.currentPaletteA && this.palettes[this.currentPaletteA]) {
             this.applyPaletteToDocument(this.palettes[this.currentPaletteA]);
+            
+            if (!this.compareMode) {
+                // Apply palette to single demo frame when not in comparison mode
+                this.applyPaletteToSingleFrame(this.currentPaletteA);
+            }
         }
     }
 
@@ -862,6 +872,37 @@ class PaletteLab {
                 styleEl.textContent = `:root { ${cssVars} }`;
             } catch (e) {
                 console.warn('Could not apply palette to frame:', e);
+            }
+        };
+
+        // Trigger reload if already loaded
+        if (frameEl.src) {
+            frameEl.src = frameEl.src;
+        }
+    }
+
+    applyPaletteToSingleFrame(paletteName) {
+        if (!paletteName || !this.palettes[paletteName]) return;
+
+        const palette = this.palettes[paletteName];
+        const frameEl = document.getElementById('demoFrame');
+
+        frameEl.onload = () => {
+            try {
+                const frameDoc = frameEl.contentDocument;
+                if (!frameDoc) return;
+
+                let styleEl = frameDoc.getElementById('active-palette');
+                if (!styleEl) {
+                    styleEl = frameDoc.createElement('style');
+                    styleEl.id = 'active-palette';
+                    frameDoc.head.appendChild(styleEl);
+                }
+
+                const cssVars = this.generateCSSVariables(palette);
+                styleEl.textContent = `:root { ${cssVars} }`;
+            } catch (e) {
+                console.warn('Could not apply palette to single demo frame:', e);
             }
         };
 
