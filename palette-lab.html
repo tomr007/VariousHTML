@@ -206,13 +206,20 @@
                 <input type="text" id="paletteNameInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary" placeholder="z.B. Meine Custom Palette">
             </div>
             <div class="mb-4">
-                <label for="jsonTextArea" class="block text-sm font-medium mb-2">JSON Daten:</label>
-                <textarea id="jsonTextArea" class="w-full h-64 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary font-mono text-sm" placeholder='Fügen Sie hier Ihr JSON ein, z.B.:
+                <label for="jsonTextArea" class="block text-sm font-medium mb-2">JSON oder JavaScript Daten:</label>
+                <textarea id="jsonTextArea" class="w-full h-64 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary font-mono text-sm" placeholder='Fügen Sie hier Ihre Daten ein. Unterstützte Formate:
+
+JSON:
 {
   "primary": "#667eea",
   "primaryLight": "#8b9cff",
-  "primaryDark": "#4f63d2",
-  "secondary": "#764ba2",
+  ...
+}
+
+JavaScript const:
+const colors = {
+  primary: "#1d4ed8",
+  primaryLight: "#3b82f6",
   ...
 }'></textarea>
             </div>
