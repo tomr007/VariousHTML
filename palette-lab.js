@@ -150,13 +150,22 @@ class PaletteLab {
             this.handleCreatePalette();
         });
 
-        // Edit Palette Modal
+        // Edit Palette Sidebar
         document.getElementById('cancelEditPalette').addEventListener('click', () => {
-            this.hideEditModal();
+            this.hideEditSidebar();
         });
 
         document.getElementById('confirmEditPalette').addEventListener('click', () => {
             this.handleEditPalette();
+        });
+
+        document.getElementById('closePaletteEditor').addEventListener('click', () => {
+            this.hideEditSidebar();
+        });
+
+        // Overlay click to close
+        document.getElementById('paletteEditorOverlay').addEventListener('click', () => {
+            this.hideEditSidebar();
         });
 
         // Keyboard events
@@ -1131,6 +1140,10 @@ class PaletteLab {
     }
 
     showEditModal(name) {
+        this.showEditSidebar(name);
+    }
+
+    showEditSidebar(name) {
         this.currentEditPalette = name;
         const palette = this.palettes[name];
         
@@ -1139,13 +1152,33 @@ class PaletteLab {
             return;
         }
 
+        // Update sidebar content
         document.getElementById('editPaletteName').textContent = name;
         this.generateEditColorInputs(palette);
-        document.getElementById('editPaletteModal').classList.remove('hidden');
+        
+        // Show sidebar
+        document.getElementById('paletteEditorOverlay').classList.add('active');
+        document.getElementById('paletteEditorSidebar').classList.add('active');
+        document.querySelector('.main-content-wrapper').classList.add('editor-open');
+        
+        // Apply current palette to demo for immediate preview
+        this.previewPaletteChanges();
     }
 
     hideEditModal() {
-        document.getElementById('editPaletteModal').classList.add('hidden');
+        this.hideEditSidebar();
+    }
+
+    hideEditSidebar() {
+        document.getElementById('paletteEditorOverlay').classList.remove('active');
+        document.getElementById('paletteEditorSidebar').classList.remove('active');
+        document.querySelector('.main-content-wrapper').classList.remove('editor-open');
+        
+        // Reset to original palette colors
+        if (this.currentEditPalette && this.currentPaletteA === this.currentEditPalette) {
+            this.applyCurrentPalette();
+        }
+        
         this.currentEditPalette = null;
     }
 
@@ -1187,12 +1220,12 @@ class PaletteLab {
         colorKeys.forEach(({ key, label }) => {
             const currentValue = palette[key] || '#000000';
             const div = document.createElement('div');
-            div.className = 'flex flex-col space-y-1';
+            div.className = 'bg-white p-3 rounded-lg border border-gray-200';
             div.innerHTML = `
-                <label class="text-sm font-medium text-gray-700">${label}</label>
+                <label class="text-xs font-medium text-gray-600 block mb-2">${label}</label>
                 <div class="flex items-center space-x-2">
-                    <input type="color" id="edit-color-${key}" value="${currentValue}" class="w-12 h-8 rounded border border-gray-300">
-                    <input type="text" id="edit-text-${key}" value="${currentValue}" class="flex-1 px-2 py-1 border border-gray-300 rounded text-sm font-mono">
+                    <input type="color" id="edit-color-${key}" value="${currentValue}" class="w-10 h-8 rounded border border-gray-300 cursor-pointer">
+                    <input type="text" id="edit-text-${key}" value="${currentValue}" class="flex-1 px-3 py-1 border border-gray-300 rounded text-sm font-mono focus:ring-2 focus:ring-primary focus:border-transparent">
                 </div>
             `;
             container.appendChild(div);
@@ -1341,7 +1374,7 @@ class PaletteLab {
             // Update contrast results if needed
             this.updateContrastResults();
 
-            this.hideEditModal();
+            this.hideEditSidebar();
 
             // Show success message
             alert('Palette erfolgreich aktualisiert!');
