@@ -7,6 +7,7 @@ class PaletteLab {
         this.compareMode = localStorage.getItem('paletteLab.compareMode') === 'true';
         this.wcagPanelVisible = localStorage.getItem('paletteLab.wcagVisible') !== 'false'; // Default to visible
         this.currentRenameId = null;
+        this.currentEditPalette = null;
 
         this.initializeEventListeners();
         this.initializeSidebar();
@@ -149,6 +150,15 @@ class PaletteLab {
             this.handleCreatePalette();
         });
 
+        // Edit Palette Modal
+        document.getElementById('cancelEditPalette').addEventListener('click', () => {
+            this.hideEditModal();
+        });
+
+        document.getElementById('confirmEditPalette').addEventListener('click', () => {
+            this.handleEditPalette();
+        });
+
         // Keyboard events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -156,6 +166,7 @@ class PaletteLab {
                 this.hideErrorModal();
                 this.hideJsonImportModal();
                 this.hideCreatePaletteModal();
+                this.hideEditModal();
             }
         });
     }
@@ -545,6 +556,7 @@ class PaletteLab {
                     <div class="relative">
                         <button class="menu-btn text-gray-400 hover:text-gray-600 p-1" data-name="${name}">⋮</button>
                         <div class="menu-dropdown hidden absolute right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 text-xs">
+                            <button class="edit-btn block w-full text-left px-3 py-2 hover:bg-gray-100" data-name="${name}">Bearbeiten</button>
                             <button class="compare-btn block w-full text-left px-3 py-2 hover:bg-gray-100" data-name="${name}">Vergleichen</button>
                             <button class="rename-btn block w-full text-left px-3 py-2 hover:bg-gray-100" data-name="${name}">Umbenennen</button>
                             <button class="duplicate-btn block w-full text-left px-3 py-2 hover:bg-gray-100" data-name="${name}">Duplizieren</button>
@@ -572,6 +584,12 @@ class PaletteLab {
         div.querySelector('.menu-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             this.toggleMenu(e.target);
+        });
+
+        div.querySelector('.edit-btn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showEditModal(name);
+            this.closeAllMenus();
         });
 
         div.querySelector('.compare-btn').addEventListener('click', (e) => {
@@ -1110,6 +1128,227 @@ class PaletteLab {
 
     hideErrorModal() {
         document.getElementById('errorModal').classList.add('hidden');
+    }
+
+    showEditModal(name) {
+        this.currentEditPalette = name;
+        const palette = this.palettes[name];
+        
+        if (!palette) {
+            this.showError('Fehler beim Bearbeiten', 'Palette nicht gefunden.');
+            return;
+        }
+
+        document.getElementById('editPaletteName').textContent = name;
+        this.generateEditColorInputs(palette);
+        document.getElementById('editPaletteModal').classList.remove('hidden');
+    }
+
+    hideEditModal() {
+        document.getElementById('editPaletteModal').classList.add('hidden');
+        this.currentEditPalette = null;
+    }
+
+    generateEditColorInputs(palette) {
+        const container = document.getElementById('editColorInputs');
+        const colorKeys = [
+            { key: 'primary', label: 'Primary' },
+            { key: 'primaryLight', label: 'Primary Light' },
+            { key: 'primaryDark', label: 'Primary Dark' },
+            { key: 'secondary', label: 'Secondary' },
+            { key: 'secondaryLight', label: 'Secondary Light' },
+            { key: 'secondaryDark', label: 'Secondary Dark' },
+            { key: 'accent', label: 'Accent' },
+            { key: 'success', label: 'Success' },
+            { key: 'warning', label: 'Warning' },
+            { key: 'error', label: 'Error' },
+            { key: 'info', label: 'Info' },
+            { key: 'background', label: 'Background' },
+            { key: 'surface', label: 'Surface' },
+            { key: 'elevatedSurface', label: 'Elevated Surface' },
+            { key: 'textPrimary', label: 'Text Primary' },
+            { key: 'textSecondary', label: 'Text Secondary' },
+            { key: 'textDisabled', label: 'Text Disabled' },
+            { key: 'link', label: 'Link' },
+            { key: 'gray50', label: 'Gray 50' },
+            { key: 'gray100', label: 'Gray 100' },
+            { key: 'gray200', label: 'Gray 200' },
+            { key: 'gray300', label: 'Gray 300' },
+            { key: 'gray400', label: 'Gray 400' },
+            { key: 'gray500', label: 'Gray 500' },
+            { key: 'gray600', label: 'Gray 600' },
+            { key: 'gray700', label: 'Gray 700' },
+            { key: 'gray800', label: 'Gray 800' },
+            { key: 'gray900', label: 'Gray 900' }
+        ];
+
+        container.innerHTML = '';
+
+        colorKeys.forEach(({ key, label }) => {
+            const currentValue = palette[key] || '#000000';
+            const div = document.createElement('div');
+            div.className = 'flex flex-col space-y-1';
+            div.innerHTML = `
+                <label class="text-sm font-medium text-gray-700">${label}</label>
+                <div class="flex items-center space-x-2">
+                    <input type="color" id="edit-color-${key}" value="${currentValue}" class="w-12 h-8 rounded border border-gray-300">
+                    <input type="text" id="edit-text-${key}" value="${currentValue}" class="flex-1 px-2 py-1 border border-gray-300 rounded text-sm font-mono">
+                </div>
+            `;
+            container.appendChild(div);
+
+            // Sync color picker and text input
+            const colorInput = div.querySelector(`#edit-color-${key}`);
+            const textInput = div.querySelector(`#edit-text-${key}`);
+
+            colorInput.addEventListener('change', () => {
+                textInput.value = colorInput.value;
+                this.previewPaletteChanges();
+            });
+
+            textInput.addEventListener('input', () => {
+                if (this.isValidColor(textInput.value)) {
+                    colorInput.value = textInput.value;
+                    this.previewPaletteChanges();
+                }
+            });
+        });
+    }
+
+    previewPaletteChanges() {
+        if (!this.currentEditPalette) return;
+
+        const updatedPalette = {};
+        const colorKeys = [
+            'primary', 'primaryLight', 'primaryDark',
+            'secondary', 'secondaryLight', 'secondaryDark',
+            'accent', 'success', 'warning', 'error', 'info',
+            'background', 'surface', 'elevatedSurface',
+            'textPrimary', 'textSecondary', 'textDisabled',
+            'link',
+            'gray50', 'gray100', 'gray200', 'gray300',
+            'gray400', 'gray500', 'gray600', 'gray700', 'gray800', 'gray900'
+        ];
+
+        colorKeys.forEach(key => {
+            const textInput = document.getElementById(`edit-text-${key}`);
+            if (textInput) {
+                updatedPalette[key] = textInput.value.trim();
+            }
+        });
+
+        // Apply temporary preview to document
+        this.applyPaletteToDocument(updatedPalette);
+        
+        // Also apply to the current active frame if this is the active palette
+        if (!this.compareMode && this.currentPaletteA === this.currentEditPalette) {
+            this.applyPaletteToSingleFrameWithData(updatedPalette);
+        }
+        if (this.compareMode && this.currentPaletteA === this.currentEditPalette) {
+            this.applyPaletteToFrameWithData('A', updatedPalette);
+        }
+        if (this.compareMode && this.currentPaletteB === this.currentEditPalette) {
+            this.applyPaletteToFrameWithData('B', updatedPalette);
+        }
+    }
+
+    applyPaletteToFrameWithData(frame, paletteData) {
+        const frameEl = document.getElementById(`demoFrame${frame}`);
+        
+        try {
+            const frameDoc = frameEl.contentDocument;
+            if (!frameDoc) return;
+
+            let styleEl = frameDoc.getElementById('active-palette');
+            if (!styleEl) {
+                styleEl = frameDoc.createElement('style');
+                styleEl.id = 'active-palette';
+                frameDoc.head.appendChild(styleEl);
+            }
+
+            const cssVars = this.generateCSSVariables(paletteData);
+            styleEl.textContent = `:root { ${cssVars} }`;
+        } catch (e) {
+            console.warn('Could not apply palette to frame:', e);
+        }
+    }
+
+    applyPaletteToSingleFrameWithData(paletteData) {
+        const frameEl = document.getElementById('demoFrame');
+        
+        try {
+            const frameDoc = frameEl.contentDocument;
+            if (!frameDoc) return;
+
+            let styleEl = frameDoc.getElementById('active-palette');
+            if (!styleEl) {
+                styleEl = frameDoc.createElement('style');
+                styleEl.id = 'active-palette';
+                frameDoc.head.appendChild(styleEl);
+            }
+
+            const cssVars = this.generateCSSVariables(paletteData);
+            styleEl.textContent = `:root { ${cssVars} }`;
+        } catch (e) {
+            console.warn('Could not apply palette to single demo frame:', e);
+        }
+    }
+
+    handleEditPalette() {
+        if (!this.currentEditPalette) {
+            this.showError('Fehler beim Speichern', 'Keine Palette zum Bearbeiten ausgewählt.');
+            return;
+        }
+
+        const updatedPalette = {};
+        const colorKeys = [
+            'primary', 'primaryLight', 'primaryDark',
+            'secondary', 'secondaryLight', 'secondaryDark',
+            'accent', 'success', 'warning', 'error', 'info',
+            'background', 'surface', 'elevatedSurface',
+            'textPrimary', 'textSecondary', 'textDisabled',
+            'link',
+            'gray50', 'gray100', 'gray200', 'gray300',
+            'gray400', 'gray500', 'gray600', 'gray700', 'gray800', 'gray900'
+        ];
+
+        try {
+            colorKeys.forEach(key => {
+                const textInput = document.getElementById(`edit-text-${key}`);
+                if (!textInput) {
+                    throw new Error(`Input field for ${key} not found`);
+                }
+                
+                const value = textInput.value.trim();
+                if (!this.isValidColor(value)) {
+                    throw new Error(`Ungültige Farbe für ${key}: ${value}`);
+                }
+
+                updatedPalette[key] = value;
+            });
+
+            // Update the palette in storage
+            this.palettes[this.currentEditPalette] = updatedPalette;
+            this.savePalettes();
+            this.renderPalettes();
+            this.updatePaletteSelectors();
+
+            // Re-apply the palette if it's currently active
+            if (this.currentPaletteA === this.currentEditPalette) {
+                this.applyCurrentPalette();
+            }
+            
+            // Update contrast results if needed
+            this.updateContrastResults();
+
+            this.hideEditModal();
+
+            // Show success message
+            alert('Palette erfolgreich aktualisiert!');
+            
+        } catch (error) {
+            this.showError('Fehler beim Speichern', error.message);
+        }
     }
 }
 
