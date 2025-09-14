@@ -9,6 +9,7 @@ class PaletteLab {
         this.currentRenameId = null;
 
         this.initializeEventListeners();
+        this.initializeSidebar();
         this.loadDefaultPalettes();
         this.renderPalettes();
         this.updateDemoSelection();
@@ -29,6 +30,38 @@ class PaletteLab {
 
     savePalettes() {
         localStorage.setItem('paletteLab.palettes', JSON.stringify(this.palettes));
+    }
+
+    initializeSidebar() {
+        // Touch device support for sidebar
+        const trigger = document.querySelector('.sidebar-trigger');
+        if (!trigger) return;
+
+        let sidebarVisible = false;
+
+        // Touch tap to toggle
+        trigger.addEventListener('click', (e) => {
+            sidebarVisible = !sidebarVisible;
+            this.toggleSidebar(sidebarVisible);
+        });
+
+        // Hide sidebar when touching outside on touch devices
+        document.addEventListener('touchstart', (e) => {
+            const sidebar = document.querySelector('.palette-lab-sidebar');
+            if (sidebarVisible && !sidebar.contains(e.target) && !trigger.contains(e.target)) {
+                sidebarVisible = false;
+                this.toggleSidebar(false);
+            }
+        });
+    }
+
+    toggleSidebar(show) {
+        const sidebar = document.querySelector('.palette-lab-sidebar');
+        if (show) {
+            sidebar.style.left = '0px';
+        } else {
+            sidebar.style.left = '-320px';
+        }
     }
 
     initializeEventListeners() {
