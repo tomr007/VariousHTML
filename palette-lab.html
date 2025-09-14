@@ -65,12 +65,68 @@
             --gray-800: #1f2937;
             --gray-900: #111827;
         }
+        
+        /* Hover Sidebar Styles */
+        .sidebar-trigger {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 8px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            z-index: 1001;
+            transition: width 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+
+        .sidebar-trigger:hover {
+            width: 12px;
+        }
+
+        .palette-lab-sidebar {
+            position: fixed;
+            left: -320px;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            transition: left 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-trigger:hover + .palette-lab-sidebar,
+        .palette-lab-sidebar:hover {
+            left: 0;
+        }
+
+        /* Touch device support */
+        @media (hover: none) and (pointer: coarse) {
+            .sidebar-trigger {
+                width: 16px;
+            }
+            
+            .sidebar-trigger:active + .palette-lab-sidebar,
+            .palette-lab-sidebar:focus-within {
+                left: 0;
+            }
+        }
+
+        /* Main content adjustment when sidebar is hidden */
+        .main-content-wrapper {
+            transition: margin-left 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+            width: 100vw;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-primary via-primary-light to-secondary font-sans text-text-primary">
-    <div class="flex h-screen">
-        <!-- Sidebar -->
-        <div class="w-80 bg-white/95 backdrop-blur-xl border-r border-white/20 overflow-y-auto">
+    <!-- Sidebar Trigger -->
+    <div class="sidebar-trigger"></div>
+    
+    <!-- Sidebar -->
+    <div class="palette-lab-sidebar">
             <!-- Header -->
             <div class="p-6 border-b border-gray-200">
                 <div class="flex items-center justify-between mb-4">
@@ -108,8 +164,9 @@
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 flex flex-col">
+    <!-- Main Content -->
+    <div class="main-content-wrapper">
+        <div class="flex-1 flex flex-col h-screen">
             <!-- Top Bar -->
             <div class="bg-white/90 backdrop-blur-xl border-b border-white/20 p-4">
                 <div class="flex items-center justify-between">
