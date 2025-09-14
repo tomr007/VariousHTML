@@ -169,13 +169,13 @@ class PaletteLab {
             this.hideEditSidebar();
         });
 
-        // Color Picker Modal events
-        document.getElementById('cancelColorPicker').addEventListener('click', () => {
-            this.hideColorPickerModal();
+        // Inline Color Picker events
+        document.getElementById('cancelInlineColorPicker').addEventListener('click', () => {
+            this.hideInlineColorPicker();
         });
 
-        document.getElementById('confirmColorPicker').addEventListener('click', () => {
-            this.handleColorPickerConfirm();
+        document.getElementById('confirmInlineColorPicker').addEventListener('click', () => {
+            this.handleInlineColorPickerConfirm();
         });
 
         // Keyboard events
@@ -186,7 +186,7 @@ class PaletteLab {
                 this.hideJsonImportModal();
                 this.hideCreatePaletteModal();
                 this.hideEditModal();
-                this.hideColorPickerModal();
+                this.hideInlineColorPicker();
             }
         });
     }
@@ -1242,7 +1242,7 @@ class PaletteLab {
             const colorTileDiv = tile.querySelector(`[data-color-tile="${key}"]`);
             colorTileDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.showColorPickerModal(key, label, colorValue);
+                this.showInlineColorPicker(key, label, colorValue);
             });
             
             container.appendChild(tile);
@@ -1366,48 +1366,50 @@ class PaletteLab {
         alert('Palette erfolgreich aktualisiert!');
     }
 
-    showColorPickerModal(colorKey, colorLabel, currentColor) {
+    showInlineColorPicker(colorKey, colorLabel, currentColor) {
         this.currentColorKey = colorKey;
         
-        document.getElementById('colorPickerTitle').textContent = `${colorLabel} bearbeiten`;
-        document.getElementById('colorPickerLabel').textContent = `${colorLabel} Farbe:`;
-        document.getElementById('colorPickerInput').value = currentColor;
-        document.getElementById('colorTextInput').value = currentColor;
+        document.getElementById('inlineColorPickerTitle').textContent = `${colorLabel} bearbeiten`;
+        document.getElementById('inlineColorPickerInput').value = currentColor;
+        document.getElementById('inlineColorTextInput').value = currentColor;
         
-        document.getElementById('colorPickerModal').classList.remove('hidden');
-        document.getElementById('colorPickerInput').focus();
+        document.getElementById('inlineColorPicker').classList.remove('hidden');
+        document.getElementById('inlineColorPickerInput').focus();
         
         // Sync color picker and text input
-        const colorInput = document.getElementById('colorPickerInput');
-        const textInput = document.getElementById('colorTextInput');
+        const colorInput = document.getElementById('inlineColorPickerInput');
+        const textInput = document.getElementById('inlineColorTextInput');
         
-        const syncInputs = () => {
-            colorInput.addEventListener('input', () => {
-                textInput.value = colorInput.value;
-            });
-            
-            textInput.addEventListener('input', () => {
-                if (this.isValidColor(textInput.value)) {
-                    colorInput.value = textInput.value;
-                }
-            });
-        };
+        // Remove any existing listeners to prevent duplicates
+        const newColorInput = colorInput.cloneNode(true);
+        const newTextInput = textInput.cloneNode(true);
+        colorInput.parentNode.replaceChild(newColorInput, colorInput);
+        textInput.parentNode.replaceChild(newTextInput, textInput);
         
-        syncInputs();
+        // Add new listeners
+        newColorInput.addEventListener('input', () => {
+            newTextInput.value = newColorInput.value;
+        });
+        
+        newTextInput.addEventListener('input', () => {
+            if (this.isValidColor(newTextInput.value)) {
+                newColorInput.value = newTextInput.value;
+            }
+        });
     }
 
-    hideColorPickerModal() {
-        document.getElementById('colorPickerModal').classList.add('hidden');
+    hideInlineColorPicker() {
+        document.getElementById('inlineColorPicker').classList.add('hidden');
         this.currentColorKey = null;
     }
 
-    handleColorPickerConfirm() {
+    handleInlineColorPickerConfirm() {
         if (!this.currentColorKey || !this.currentEditPalette) {
-            this.hideColorPickerModal();
+            this.hideInlineColorPicker();
             return;
         }
         
-        const newColor = document.getElementById('colorTextInput').value.trim();
+        const newColor = document.getElementById('inlineColorTextInput').value.trim();
         
         if (!this.isValidColor(newColor)) {
             this.showError('Ungültige Farbe', `Die eingegebene Farbe "${newColor}" ist nicht gültig.`);
@@ -1425,7 +1427,7 @@ class PaletteLab {
             this.previewPaletteChanges();
         }
         
-        this.hideColorPickerModal();
+        this.hideInlineColorPicker();
     }
 }
 
