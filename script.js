@@ -56,6 +56,9 @@ class HTMLPageManager {
             });
         }
 
+        // Sidebar functionality
+        this.initializeSidebar();
+
         // Keyboard events
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
@@ -272,6 +275,74 @@ class HTMLPageManager {
             localStorage.setItem('htmlPageManager_pages', JSON.stringify(this.pages));
         } catch (error) {
             console.error('Fehler beim Speichern der Seiten:', error);
+        }
+    }
+
+    initializeSidebar() {
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = item.getAttribute('href');
+                
+                // Handle navigation based on href
+                switch(href) {
+                    case '#upload':
+                        this.scrollToSection('uploadArea');
+                        break;
+                    case '#pages':
+                        this.scrollToSection('pagesGrid');
+                        break;
+                    case '#palette-lab':
+                        window.location.href = 'palette-lab.html';
+                        break;
+                    case '#ui-def':
+                        window.location.href = 'ui-definition.html';
+                        break;
+                }
+            });
+        });
+
+        // Touch device support
+        if ('ontouchstart' in window) {
+            const trigger = document.querySelector('.sidebar-trigger');
+            let touchStartY = 0;
+            let sidebarVisible = false;
+
+            trigger.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                sidebarVisible = !sidebarVisible;
+                this.toggleSidebar(sidebarVisible);
+            });
+
+            // Hide sidebar when touching outside
+            document.addEventListener('touchstart', (e) => {
+                const sidebar = document.querySelector('.sidebar');
+                if (sidebarVisible && !sidebar.contains(e.target) && !trigger.contains(e.target)) {
+                    sidebarVisible = false;
+                    this.toggleSidebar(false);
+                }
+            });
+        }
+    }
+
+    scrollToSection(elementId) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }
+
+    toggleSidebar(show) {
+        const sidebar = document.querySelector('.sidebar');
+        if (show) {
+            sidebar.style.left = '0px';
+        } else {
+            sidebar.style.left = '-240px';
         }
     }
 }

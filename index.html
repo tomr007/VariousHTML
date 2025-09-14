@@ -33,8 +33,137 @@
             }
         }
     </script>
+    <style>
+        /* Sidebar Styles */
+        .sidebar-trigger {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 8px;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            z-index: 1001;
+            transition: width 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+
+        .sidebar-trigger:hover {
+            width: 12px;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: -240px;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: rgba(0, 26, 77, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            transition: left 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+            z-index: 1000;
+        }
+
+        .sidebar-trigger:hover + .sidebar,
+        .sidebar:hover {
+            left: 0;
+        }
+
+        .sidebar-content {
+            padding: 2rem 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(4px);
+        }
+
+        .sidebar-icon {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-text {
+            font-weight: 500;
+        }
+
+        /* Touch device support */
+        @media (hover: none) and (pointer: coarse) {
+            .sidebar-trigger {
+                width: 16px;
+            }
+            
+            .sidebar-trigger:active + .sidebar,
+            .sidebar:focus-within {
+                left: 0;
+            }
+        }
+
+        /* Main content adjustment */
+        .main-content-wrapper {
+            transition: margin-left 0.3s cubic-bezier(.68,-0.55,.27,1.55);
+        }
+    </style>
 </head>
 <body class="min-h-screen font-sans text-text-primary" style="background-color: #001a4d;">
+    <!-- Sidebar Trigger -->
+    <div class="sidebar-trigger"></div>
+    
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-content">
+            <div class="sidebar-header">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">📁</span>
+                    </div>
+                    <span class="text-white font-semibold text-lg">Menü</span>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <a href="#upload" class="sidebar-item">
+                    <span class="sidebar-icon">📤</span>
+                    <span class="sidebar-text">Upload</span>
+                </a>
+                <a href="#pages" class="sidebar-item">
+                    <span class="sidebar-icon">📄</span>
+                    <span class="sidebar-text">Seiten</span>
+                </a>
+                <a href="#palette-lab" class="sidebar-item">
+                    <span class="sidebar-icon">🎯</span>
+                    <span class="sidebar-text">Palette Lab</span>
+                </a>
+                <a href="#ui-def" class="sidebar-item">
+                    <span class="sidebar-icon">🎨</span>
+                    <span class="sidebar-text">UI Definition</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+    
     <div class="max-w-6xl mx-auto px-5 py-8">
         <!-- Modern Navigation Header -->
         <nav class="flex justify-between items-center mb-8 bg-white/10 backdrop-blur-lg rounded-2xl px-6 py-4 border border-white/20">
