@@ -105,9 +105,9 @@
         /* Palette Editor Sidebar */
         .palette-editor-sidebar {
             position: fixed;
-            left: -400px;
+            left: -160px;
             top: 0;
-            width: 400px;
+            width: 160px;
             height: 100vh;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
@@ -143,8 +143,33 @@
 
         /* Main content adjustment when editor sidebar is open */
         .main-content-wrapper.editor-open {
-            margin-left: 400px;
-            width: calc(100vw - 400px);
+            margin-left: 160px;
+            width: calc(100vw - 160px);
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            .palette-editor-sidebar {
+                width: 280px;
+                left: -280px;
+            }
+            
+            .main-content-wrapper.editor-open {
+                margin-left: 280px;
+                width: calc(100vw - 280px);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .palette-editor-sidebar {
+                width: 100vw;
+                left: -100vw;
+            }
+            
+            .main-content-wrapper.editor-open {
+                margin-left: 0;
+                width: 100vw;
+            }
         }
 
         /* Touch device support */
