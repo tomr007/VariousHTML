@@ -4,38 +4,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTML Seiten Manager</title>
-    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        'primary-light': '#8b9cff',
+                        'primary-dark': '#4f63d2',
+                        secondary: '#764ba2',
+                        'secondary-light': '#9d6cc8',
+                        'secondary-dark': '#5a3a7d',
+                        accent: '#10b981',
+                        success: '#059669',
+                        warning: '#f59e0b',
+                        error: '#dc2626',
+                        info: '#0ea5e9',
+                        background: '#f8fafc',
+                        surface: '#ffffff',
+                        'elevated-surface': '#ffffff',
+                        'text-primary': '#1e293b',
+                        'text-secondary': '#64748b',
+                        'text-disabled': '#94a3b8',
+                        link: '#667eea'
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <div class="container">
-        <header class="header">
-            <h1>HTML Seiten Manager</h1>
-            <p>Laden Sie HTML-Seiten hoch und verwalten Sie sie über ein übersichtliches Menü</p>
+<body class="min-h-screen bg-gradient-to-br from-primary via-primary-light to-secondary font-sans text-text-primary">
+    <div class="max-w-6xl mx-auto px-5 py-8">
+        <header class="text-center mb-12 text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">HTML Seiten Manager</h1>
+            <p class="text-lg md:text-xl opacity-90 max-w-2xl mx-auto">Laden Sie HTML-Seiten hoch und verwalten Sie sie über ein übersichtliches Menü</p>
         </header>
 
-        <main class="main-content">
+        <main class="space-y-8">
             <!-- Upload Bereich -->
-            <section class="upload-section">
-                <div class="upload-area" id="uploadArea">
-                    <div class="upload-icon">📁</div>
-                    <h3>HTML-Dateien hochladen</h3>
-                    <p>Ziehen Sie HTML-Dateien hierher oder klicken Sie zum Auswählen</p>
+            <section class="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <div class="border-3 border-dashed border-primary rounded-2xl p-12 text-center transition-all duration-300 cursor-pointer bg-primary/5 hover:bg-secondary/10 hover:border-secondary hover:-translate-y-1" id="uploadArea">
+                    <div class="text-5xl mb-6">📁</div>
+                    <h3 class="text-primary text-2xl font-semibold mb-4">HTML-Dateien hochladen</h3>
+                    <p class="text-text-secondary mb-6 text-lg">Ziehen Sie HTML-Dateien hierher oder klicken Sie zum Auswählen</p>
                     <input type="file" id="fileInput" accept=".html,.htm" multiple hidden>
-                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    <button class="bg-gradient-to-r from-primary to-secondary text-white px-8 py-3 rounded-full text-lg font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-primary/30" onclick="document.getElementById('fileInput').click()">
                         Dateien auswählen
                     </button>
                 </div>
-                <div class="upload-status" id="uploadStatus"></div>
+                <div class="mt-6 p-4 rounded-xl hidden" id="uploadStatus"></div>
             </section>
 
             <!-- Seiten Menü -->
-            <section class="pages-section">
-                <h2>Hochgeladene Seiten</h2>
-                <div class="pages-grid" id="pagesGrid">
-                    <div class="no-pages" id="noPages">
-                        <div class="empty-icon">📄</div>
-                        <p>Noch keine Seiten hochgeladen</p>
-                        <p class="empty-subtitle">Laden Sie HTML-Dateien hoch, um sie hier zu sehen</p>
+            <section class="bg-white/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+                <h2 class="text-text-primary text-3xl font-bold mb-8">Hochgeladene Seiten</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="pagesGrid">
+                    <div class="col-span-full text-center py-16 text-text-secondary" id="noPages">
+                        <div class="text-6xl mb-6 opacity-50">📄</div>
+                        <p class="text-xl mb-2">Noch keine Seiten hochgeladen</p>
+                        <p class="text-sm">Laden Sie HTML-Dateien hoch, um sie hier zu sehen</p>
                     </div>
                 </div>
             </section>
@@ -43,17 +71,17 @@
     </div>
 
     <!-- Modal für Seitenanzeige -->
-    <div class="modal" id="pageModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Seite anzeigen</h3>
-                <div class="modal-actions">
-                    <button class="btn-secondary" id="deletePageBtn">🗑️ Löschen</button>
-                    <button class="btn-close" id="closeModal">✕</button>
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden" id="pageModal">
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[95vw] h-[95vh] max-w-7xl bg-white rounded-3xl overflow-hidden shadow-2xl">
+            <div class="flex justify-between items-center px-8 py-6 bg-gradient-to-r from-primary to-secondary text-white">
+                <h3 class="text-xl font-semibold" id="modalTitle">Seite anzeigen</h3>
+                <div class="flex gap-3">
+                    <button class="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg border border-white/30 transition-colors duration-200" id="deletePageBtn">🗑️ Löschen</button>
+                    <button class="bg-white/20 hover:bg-white/30 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:rotate-90" id="closeModal">✕</button>
                 </div>
             </div>
-            <div class="modal-body">
-                <iframe id="pageFrame" src="" frameborder="0"></iframe>
+            <div class="h-[calc(100%-5rem)]">
+                <iframe id="pageFrame" src="" class="w-full h-full border-none"></iframe>
             </div>
         </div>
     </div>
