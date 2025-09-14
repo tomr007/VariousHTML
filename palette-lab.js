@@ -146,7 +146,7 @@ class PaletteLab {
         }
 
         try {
-            const data = JSON.parse(jsonText);
+            const data = this.parseInput(jsonText);
             const palette = this.validatePalette(data);
             const uniqueName = this.generateUniqueName(name);
 
@@ -280,6 +280,41 @@ class PaletteLab {
             this.applyPalette(uniqueName);
         } catch (error) {
             this.showError('Fehler beim Erstellen', error.message);
+        }
+    }
+
+    parseInput(inputText) {
+        // Try to parse as regular JSON first
+        try {
+            return JSON.parse(inputText);
+        } catch (jsonError) {
+            // If JSON parsing fails, try to parse as JavaScript const object
+            try {
+                return this.parseJavaScriptObject(inputText);
+            } catch (jsError) {
+                // If both fail, throw a more helpful error
+                throw new Error('Ungültiges Format. Bitte verwenden Sie entweder JSON oder JavaScript const Syntax.\n\nJSON Fehler: ' + jsonError.message + '\nJavaScript Fehler: ' + jsError.message);
+            }
+        }
+    }
+
+    parseJavaScriptObject(inputText) {
+        let cleanedText = inputText.trim();
+
+        // Remove 'const' declaration and variable name
+        cleanedText = cleanedText.replace(/^const\s+\w+\s*=\s*/, '');
+        
+        // Remove trailing semicolon
+        cleanedText = cleanedText.replace(/;?\s*$/, '');
+
+        // Convert JavaScript object syntax to JSON
+        // Handle unquoted keys by wrapping them in quotes
+        cleanedText = cleanedText.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":');
+
+        try {
+            return JSON.parse(cleanedText);
+        } catch (error) {
+            throw new Error('Ungültiges JavaScript Object Format: ' + error.message);
         }
     }
 
