@@ -452,15 +452,19 @@ const colors = {
                 </h4>
                 <div class="text-sm text-gray-600 space-y-2">
                     <p><strong>Direkte Bearbeitung:</strong></p>
-                    <p>• <strong>Ein Klick auf eine Farbkachel</strong> öffnet den Farbpicker</p>
-                    <p>• Alle Palettenfarben sind bearbeitbar</p>
+                    <p>• <strong>Ein Klick auf eine Farbkachel</strong> öffnet den nativen Farbpicker</p>
+                    <p>• Sofortiges Ändern von Farben ohne weitere Schritte</p>
                     <p>• Live-Vorschau in der Demo</p>
+                    <p>• <strong>Rückgängig-Button</strong> stellt alle Originalfarben wieder her</p>
                     <p>• Speichern am Ende nicht vergessen</p>
                 </div>
             </div>
 
             <!-- Footer -->
             <div class="p-4 border-t border-gray-200 bg-gray-50 space-y-2">
+                <button id="undoAllChanges" class="w-full bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition-all font-medium">
+                    Alle Änderungen rückgängig
+                </button>
                 <button id="confirmEditPalette" class="w-full bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark transition-all font-medium">
                     Änderungen speichern
                 </button>
@@ -481,6 +485,34 @@ const colors = {
             </h3>
             <div id="errorContent" class="mb-4 text-sm text-text-secondary"></div>
             <button id="closeError" class="px-4 py-2 bg-error text-white rounded-lg hover:bg-red-700">Schließen</button>
+        </div>
+    </div>
+
+    <!-- Popup Color Picker -->
+    <div id="popupColorPicker" class="hidden fixed z-50 bg-white border border-gray-300 rounded-lg shadow-xl p-4 min-w-[280px]">
+        <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-semibold text-gray-700 flex items-center">
+                <span class="mr-2">🎨</span>
+                <span id="popupColorPickerTitle">Farbe bearbeiten</span>
+            </h4>
+            <button id="popupColorPickerClose" class="text-gray-400 hover:text-gray-600 text-lg leading-none">&times;</button>
+        </div>
+        <div class="space-y-3">
+            <div class="flex items-center space-x-3">
+                <input type="color" id="popupColorPickerInput" class="w-12 h-12 rounded-lg border-2 border-gray-300 cursor-pointer">
+                <div class="flex-1">
+                    <input type="text" id="popupColorTextInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary font-mono text-sm" placeholder="#000000">
+                    <div class="text-xs text-gray-500 mt-1">Hex-Code oder CSS-Farbe</div>
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button id="popupColorPickerUndo" class="px-3 py-2 text-gray-600 hover:text-gray-800 transition-all text-sm border border-gray-300 rounded-lg">
+                    Rückgängig
+                </button>
+                <button id="popupColorPickerClose2" class="flex-1 text-gray-600 hover:text-gray-800 transition-all text-sm">
+                    Schließen
+                </button>
+            </div>
         </div>
     </div>
 

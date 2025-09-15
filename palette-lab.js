@@ -164,6 +164,10 @@ class PaletteLab {
             this.hideEditSidebar();
         });
 
+        document.getElementById('undoAllChanges').addEventListener('click', () => {
+            this.undoAllChanges();
+        });
+
         // Overlay click to close
         document.getElementById('paletteEditorOverlay').addEventListener('click', () => {
             this.hideEditSidebar();
@@ -1163,6 +1167,9 @@ class PaletteLab {
             return;
         }
 
+        // Store original palette for undo functionality
+        this.originalPalette = JSON.parse(JSON.stringify(palette));
+
         // Update sidebar content
         document.getElementById('editPaletteName').textContent = name;
         this.generateColorTiles(palette);
@@ -1191,6 +1198,7 @@ class PaletteLab {
         }
         
         this.currentEditPalette = null;
+        this.originalPalette = null;
     }
 
     generateColorTiles(palette) {
@@ -1236,13 +1244,27 @@ class PaletteLab {
                 <div class="text-xs font-medium text-gray-600">${label}</div>
                 <div class="h-8 rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" style="background-color: ${colorValue};" title="${label}: ${colorValue} - Klicken zum Bearbeiten" data-color-tile="${key}"></div>
                 <div class="text-xs font-mono text-gray-700 text-center" data-color-code="${key}">${colorValue}</div>
+                <input type="color" id="hidden-color-picker-${key}" style="position: absolute; left: -9999px; opacity: 0;" value="${colorValue}">
             `;
             
             // Add click event listener to the color tile
             const colorTileDiv = tile.querySelector(`[data-color-tile="${key}"]`);
+            const hiddenColorPicker = tile.querySelector(`#hidden-color-picker-${key}`);
+            
+            // Store original color for undo functionality
+            hiddenColorPicker.originalColor = colorValue;
+            
             colorTileDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.showInlineColorPicker(key, label, colorValue);
+                this.currentColorKey = key;
+                this.originalColor = colorValue;
+                hiddenColorPicker.click();
+            });
+            
+            // Handle color change from native color picker
+            hiddenColorPicker.addEventListener('change', (e) => {
+                const newColor = e.target.value;
+                this.applyColorChange(key, newColor);
             });
             
             container.appendChild(tile);
@@ -1261,6 +1283,7 @@ class PaletteLab {
             const colorValue = palette[key] || '#000000';
             const tileElement = document.querySelector(`[data-color-tile="${key}"]`);
             const codeElement = document.querySelector(`[data-color-code="${key}"]`);
+            const hiddenColorPicker = document.getElementById(`hidden-color-picker-${key}`);
             
             if (tileElement) {
                 tileElement.style.backgroundColor = colorValue;
@@ -1268,6 +1291,10 @@ class PaletteLab {
             }
             if (codeElement) {
                 codeElement.textContent = colorValue;
+            }
+            if (hiddenColorPicker) {
+                hiddenColorPicker.value = colorValue;
+                hiddenColorPicker.originalColor = colorValue;
             }
         });
     }
@@ -1366,6 +1393,130 @@ class PaletteLab {
         alert('Palette erfolgreich aktualisiert!');
     }
 
+    showPopupColorPicker(colorKey, colorLabel, currentColor, clickEvent) {
+        this.currentColorKey = colorKey;
+        this.originalColor = currentColor; // Store original color for undo
+        
+        const popup = document.getElementById('popupColorPicker');
+        const title = document.getElementById('popupColorPickerTitle');
+        const colorInput = document.getElementById('popupColorPickerInput');
+        const textInput = document.getElementById('popupColorTextInput');
+        
+        // Set up the popup
+        title.textContent = `${colorLabel} bearbeiten`;
+        colorInput.value = currentColor;
+        textInput.value = currentColor;
+        
+        // Position popup at mouse click location
+        const rect = clickEvent.target.getBoundingClientRect();
+        
+        // Show popup first to get accurate dimensions
+        popup.classList.remove('hidden');
+        
+        // Now get popup dimensions for positioning
+        const popupRect = popup.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        let left = rect.left;
+        let top = rect.bottom + 8;
+        
+        // Adjust horizontal position if popup would overflow
+        if (left + popupRect.width > viewportWidth) {
+            left = viewportWidth - popupRect.width - 10;
+        }
+        
+        // Adjust vertical position if popup would overflow
+        if (top + popupRect.height > viewportHeight) {
+            top = rect.top - popupRect.height - 8;
+        }
+        
+        popup.style.left = `${Math.max(10, left)}px`;
+        popup.style.top = `${Math.max(10, top)}px`;
+        
+        // Remove existing event listeners
+        const newColorInput = colorInput.cloneNode(true);
+        const newTextInput = textInput.cloneNode(true);
+        colorInput.parentNode.replaceChild(newColorInput, colorInput);
+        textInput.parentNode.replaceChild(newTextInput, textInput);
+        
+        // Add immediate change listeners
+        newColorInput.addEventListener('input', () => {
+            newTextInput.value = newColorInput.value;
+            this.applyColorChange(colorKey, newColorInput.value);
+        });
+        
+        newTextInput.addEventListener('input', () => {
+            if (this.isValidColor(newTextInput.value)) {
+                newColorInput.value = newTextInput.value;
+                this.applyColorChange(colorKey, newTextInput.value);
+            }
+        });
+        
+        // Set up event handlers for popup controls
+        this.setupPopupEventHandlers();
+        
+        newColorInput.focus();
+    }
+
+    setupPopupEventHandlers() {
+        // Close buttons
+        document.getElementById('popupColorPickerClose').onclick = () => this.hidePopupColorPicker();
+        document.getElementById('popupColorPickerClose2').onclick = () => this.hidePopupColorPicker();
+        
+        // Undo button
+        document.getElementById('popupColorPickerUndo').onclick = () => {
+            if (this.originalColor && this.currentColorKey) {
+                this.applyColorChange(this.currentColorKey, this.originalColor);
+                document.getElementById('popupColorPickerInput').value = this.originalColor;
+                document.getElementById('popupColorTextInput').value = this.originalColor;
+            }
+        };
+        
+        // Close on escape key
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.hidePopupColorPicker();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        // Close when clicking outside
+        const outsideClickHandler = (e) => {
+            const popup = document.getElementById('popupColorPicker');
+            if (!popup.contains(e.target)) {
+                this.hidePopupColorPicker();
+                document.removeEventListener('click', outsideClickHandler);
+            }
+        };
+        // Use setTimeout to avoid immediate closing due to the original click event
+        setTimeout(() => {
+            document.addEventListener('click', outsideClickHandler);
+        }, 100);
+    }
+
+    hidePopupColorPicker() {
+        document.getElementById('popupColorPicker').classList.add('hidden');
+        this.currentColorKey = null;
+        this.originalColor = null;
+    }
+
+    applyColorChange(colorKey, newColor) {
+        if (!this.currentEditPalette || !this.palettes[this.currentEditPalette]) {
+            return;
+        }
+        
+        // Update palette in memory
+        this.palettes[this.currentEditPalette][colorKey] = newColor;
+        
+        // Update color tile display immediately
+        this.updateColorTiles(this.palettes[this.currentEditPalette]);
+        
+        // Trigger preview update immediately
+        this.previewPaletteChanges();
+    }
+
     showInlineColorPicker(colorKey, colorLabel, currentColor) {
         this.currentColorKey = colorKey;
         
@@ -1401,6 +1552,25 @@ class PaletteLab {
     hideInlineColorPicker() {
         document.getElementById('inlineColorPicker').classList.add('hidden');
         this.currentColorKey = null;
+    }
+
+    undoAllChanges() {
+        if (!this.currentEditPalette || !this.originalPalette) {
+            this.showError('Fehler beim Rückgängig machen', 'Keine ursprüngliche Palette verfügbar.');
+            return;
+        }
+
+        // Restore original palette
+        this.palettes[this.currentEditPalette] = JSON.parse(JSON.stringify(this.originalPalette));
+        
+        // Update color tiles display
+        this.updateColorTiles(this.palettes[this.currentEditPalette]);
+        
+        // Update preview immediately
+        this.previewPaletteChanges();
+        
+        // Show confirmation
+        alert('Alle Änderungen wurden rückgängig gemacht!');
     }
 
     handleInlineColorPickerConfirm() {
