@@ -1242,7 +1242,7 @@ class PaletteLab {
             const colorTileDiv = tile.querySelector(`[data-color-tile="${key}"]`);
             colorTileDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.showInlineColorPicker(key, label, colorValue);
+                this.showPopupColorPicker(key, label, colorValue, e);
             });
             
             container.appendChild(tile);
@@ -1364,6 +1364,130 @@ class PaletteLab {
 
         // Show success message
         alert('Palette erfolgreich aktualisiert!');
+    }
+
+    showPopupColorPicker(colorKey, colorLabel, currentColor, clickEvent) {
+        this.currentColorKey = colorKey;
+        this.originalColor = currentColor; // Store original color for undo
+        
+        const popup = document.getElementById('popupColorPicker');
+        const title = document.getElementById('popupColorPickerTitle');
+        const colorInput = document.getElementById('popupColorPickerInput');
+        const textInput = document.getElementById('popupColorTextInput');
+        
+        // Set up the popup
+        title.textContent = `${colorLabel} bearbeiten`;
+        colorInput.value = currentColor;
+        textInput.value = currentColor;
+        
+        // Position popup at mouse click location
+        const rect = clickEvent.target.getBoundingClientRect();
+        
+        // Show popup first to get accurate dimensions
+        popup.classList.remove('hidden');
+        
+        // Now get popup dimensions for positioning
+        const popupRect = popup.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        
+        let left = rect.left;
+        let top = rect.bottom + 8;
+        
+        // Adjust horizontal position if popup would overflow
+        if (left + popupRect.width > viewportWidth) {
+            left = viewportWidth - popupRect.width - 10;
+        }
+        
+        // Adjust vertical position if popup would overflow
+        if (top + popupRect.height > viewportHeight) {
+            top = rect.top - popupRect.height - 8;
+        }
+        
+        popup.style.left = `${Math.max(10, left)}px`;
+        popup.style.top = `${Math.max(10, top)}px`;
+        
+        // Remove existing event listeners
+        const newColorInput = colorInput.cloneNode(true);
+        const newTextInput = textInput.cloneNode(true);
+        colorInput.parentNode.replaceChild(newColorInput, colorInput);
+        textInput.parentNode.replaceChild(newTextInput, textInput);
+        
+        // Add immediate change listeners
+        newColorInput.addEventListener('input', () => {
+            newTextInput.value = newColorInput.value;
+            this.applyColorChange(colorKey, newColorInput.value);
+        });
+        
+        newTextInput.addEventListener('input', () => {
+            if (this.isValidColor(newTextInput.value)) {
+                newColorInput.value = newTextInput.value;
+                this.applyColorChange(colorKey, newTextInput.value);
+            }
+        });
+        
+        // Set up event handlers for popup controls
+        this.setupPopupEventHandlers();
+        
+        newColorInput.focus();
+    }
+
+    setupPopupEventHandlers() {
+        // Close buttons
+        document.getElementById('popupColorPickerClose').onclick = () => this.hidePopupColorPicker();
+        document.getElementById('popupColorPickerClose2').onclick = () => this.hidePopupColorPicker();
+        
+        // Undo button
+        document.getElementById('popupColorPickerUndo').onclick = () => {
+            if (this.originalColor && this.currentColorKey) {
+                this.applyColorChange(this.currentColorKey, this.originalColor);
+                document.getElementById('popupColorPickerInput').value = this.originalColor;
+                document.getElementById('popupColorTextInput').value = this.originalColor;
+            }
+        };
+        
+        // Close on escape key
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                this.hidePopupColorPicker();
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        document.addEventListener('keydown', escapeHandler);
+        
+        // Close when clicking outside
+        const outsideClickHandler = (e) => {
+            const popup = document.getElementById('popupColorPicker');
+            if (!popup.contains(e.target)) {
+                this.hidePopupColorPicker();
+                document.removeEventListener('click', outsideClickHandler);
+            }
+        };
+        // Use setTimeout to avoid immediate closing due to the original click event
+        setTimeout(() => {
+            document.addEventListener('click', outsideClickHandler);
+        }, 100);
+    }
+
+    hidePopupColorPicker() {
+        document.getElementById('popupColorPicker').classList.add('hidden');
+        this.currentColorKey = null;
+        this.originalColor = null;
+    }
+
+    applyColorChange(colorKey, newColor) {
+        if (!this.currentEditPalette || !this.palettes[this.currentEditPalette]) {
+            return;
+        }
+        
+        // Update palette in memory
+        this.palettes[this.currentEditPalette][colorKey] = newColor;
+        
+        // Update color tile display immediately
+        this.updateColorTiles(this.palettes[this.currentEditPalette]);
+        
+        // Trigger preview update immediately
+        this.previewPaletteChanges();
     }
 
     showInlineColorPicker(colorKey, colorLabel, currentColor) {
