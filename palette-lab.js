@@ -1242,31 +1242,22 @@ class PaletteLab {
             tile.className = 'flex flex-col space-y-1';
             tile.innerHTML = `
                 <div class="text-xs font-medium text-gray-600">${label}</div>
-                <div class="h-8 rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" style="background-color: ${colorValue};" title="${label}: ${colorValue} - Klicken zum Bearbeiten" data-color-tile="${key}"></div>
+                <div class="h-8 rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow relative" style="background-color: ${colorValue};" title="${label}: ${colorValue} - Klicken zum Bearbeiten" data-color-tile="${key}">
+                    <input type="color" id="hidden-color-picker-${key}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10;" value="${colorValue}">
+                </div>
                 <div class="text-xs font-mono text-gray-700 text-center" data-color-code="${key}">${colorValue}</div>
-                <input type="color" id="hidden-color-picker-${key}" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" value="${colorValue}">
             `;
             
-            // Add click event listener to the color tile
-            const colorTileDiv = tile.querySelector(`[data-color-tile="${key}"]`);
+            // Get the hidden color picker
             const hiddenColorPicker = tile.querySelector(`#hidden-color-picker-${key}`);
             
             // Store original color for undo functionality
             hiddenColorPicker.originalColor = colorValue;
             
-            colorTileDiv.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.currentColorKey = key;
-                this.originalColor = colorValue;
-                // Force trigger the color picker
-                setTimeout(() => {
-                    hiddenColorPicker.click();
-                }, 0);
-            });
-            
             // Handle color change from native color picker
             hiddenColorPicker.addEventListener('change', (e) => {
                 const newColor = e.target.value;
+                this.currentColorKey = key;
                 this.applyColorChange(key, newColor);
             });
             
