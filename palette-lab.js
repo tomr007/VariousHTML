@@ -1244,7 +1244,7 @@ class PaletteLab {
                 <div class="text-xs font-medium text-gray-600">${label}</div>
                 <div class="h-8 rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" style="background-color: ${colorValue};" title="${label}: ${colorValue} - Klicken zum Bearbeiten" data-color-tile="${key}"></div>
                 <div class="text-xs font-mono text-gray-700 text-center" data-color-code="${key}">${colorValue}</div>
-                <input type="color" id="hidden-color-picker-${key}" style="position: absolute; left: -9999px; opacity: 0;" value="${colorValue}">
+                <input type="color" id="hidden-color-picker-${key}" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;" value="${colorValue}">
             `;
             
             // Add click event listener to the color tile
@@ -1258,7 +1258,10 @@ class PaletteLab {
                 e.stopPropagation();
                 this.currentColorKey = key;
                 this.originalColor = colorValue;
-                hiddenColorPicker.click();
+                // Force trigger the color picker
+                setTimeout(() => {
+                    hiddenColorPicker.click();
+                }, 0);
             });
             
             // Handle color change from native color picker
