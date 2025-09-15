@@ -164,6 +164,10 @@ class PaletteLab {
             this.hideEditSidebar();
         });
 
+        document.getElementById('undoAllChanges').addEventListener('click', () => {
+            this.undoAllChanges();
+        });
+
         // Overlay click to close
         document.getElementById('paletteEditorOverlay').addEventListener('click', () => {
             this.hideEditSidebar();
@@ -1163,6 +1167,9 @@ class PaletteLab {
             return;
         }
 
+        // Store original palette for undo functionality
+        this.originalPalette = JSON.parse(JSON.stringify(palette));
+
         // Update sidebar content
         document.getElementById('editPaletteName').textContent = name;
         this.generateColorTiles(palette);
@@ -1191,6 +1198,7 @@ class PaletteLab {
         }
         
         this.currentEditPalette = null;
+        this.originalPalette = null;
     }
 
     generateColorTiles(palette) {
@@ -1236,13 +1244,27 @@ class PaletteLab {
                 <div class="text-xs font-medium text-gray-600">${label}</div>
                 <div class="h-8 rounded-md border border-gray-200 shadow-sm cursor-pointer hover:shadow-md transition-shadow" style="background-color: ${colorValue};" title="${label}: ${colorValue} - Klicken zum Bearbeiten" data-color-tile="${key}"></div>
                 <div class="text-xs font-mono text-gray-700 text-center" data-color-code="${key}">${colorValue}</div>
+                <input type="color" id="hidden-color-picker-${key}" style="position: absolute; left: -9999px; opacity: 0;" value="${colorValue}">
             `;
             
             // Add click event listener to the color tile
             const colorTileDiv = tile.querySelector(`[data-color-tile="${key}"]`);
+            const hiddenColorPicker = tile.querySelector(`#hidden-color-picker-${key}`);
+            
+            // Store original color for undo functionality
+            hiddenColorPicker.originalColor = colorValue;
+            
             colorTileDiv.addEventListener('click', (e) => {
                 e.stopPropagation();
-                this.showPopupColorPicker(key, label, colorValue, e);
+                this.currentColorKey = key;
+                this.originalColor = colorValue;
+                hiddenColorPicker.click();
+            });
+            
+            // Handle color change from native color picker
+            hiddenColorPicker.addEventListener('change', (e) => {
+                const newColor = e.target.value;
+                this.applyColorChange(key, newColor);
             });
             
             container.appendChild(tile);
@@ -1261,6 +1283,7 @@ class PaletteLab {
             const colorValue = palette[key] || '#000000';
             const tileElement = document.querySelector(`[data-color-tile="${key}"]`);
             const codeElement = document.querySelector(`[data-color-code="${key}"]`);
+            const hiddenColorPicker = document.getElementById(`hidden-color-picker-${key}`);
             
             if (tileElement) {
                 tileElement.style.backgroundColor = colorValue;
@@ -1268,6 +1291,10 @@ class PaletteLab {
             }
             if (codeElement) {
                 codeElement.textContent = colorValue;
+            }
+            if (hiddenColorPicker) {
+                hiddenColorPicker.value = colorValue;
+                hiddenColorPicker.originalColor = colorValue;
             }
         });
     }
@@ -1525,6 +1552,25 @@ class PaletteLab {
     hideInlineColorPicker() {
         document.getElementById('inlineColorPicker').classList.add('hidden');
         this.currentColorKey = null;
+    }
+
+    undoAllChanges() {
+        if (!this.currentEditPalette || !this.originalPalette) {
+            this.showError('Fehler beim Rückgängig machen', 'Keine ursprüngliche Palette verfügbar.');
+            return;
+        }
+
+        // Restore original palette
+        this.palettes[this.currentEditPalette] = JSON.parse(JSON.stringify(this.originalPalette));
+        
+        // Update color tiles display
+        this.updateColorTiles(this.palettes[this.currentEditPalette]);
+        
+        // Update preview immediately
+        this.previewPaletteChanges();
+        
+        // Show confirmation
+        alert('Alle Änderungen wurden rückgängig gemacht!');
     }
 
     handleInlineColorPickerConfirm() {
